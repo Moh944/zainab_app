@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d1b2a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>هيئة السيدة زينب ع</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<style>
+:root{
+--navy:#0d1b2a;--navy2:#1a2f45;--blue:#1565c0;--blue2:#1976d2;--blueli:#e3f2fd;
+--gold:#c9973a;--goldli:#fff8e1;
+--green:#1b5e20;--green2:#2e7d32;--greenli:#e8f5e9;
+--red:#b71c1c;--red2:#c62828;--redli:#ffebee;
+--orange:#e65100;--orangeli:#fff3e0;
+--purple:#4a148c;--purpleli:#f3e5f5;
+--gray:#f4f6f9;--gray2:#e8ecf0;--gray3:#c5cdd6;
+--text:#1a2332;--text2:#546e7a;--white:#fff;
+--r:14px;--r2:10px;
+--sh:0 2px 16px rgba(13,27,42,.10);--sh2:0 1px 6px rgba(13,27,42,.07);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Cairo',sans-serif;background:var(--gray);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* LOADING */
+#loading{position:fixed;inset:0;z-index:9999;background:linear-gradient(150deg,#0d1b2a,#1a2f45,#1565c0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity .5s}
+.ld-ring{width:110px;height:110px;border-radius:50%;border:2.5px solid var(--gold);display:flex;align-items:center;justify-content:center;margin-bottom:20px;animation:glow 2s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 30px rgba(201,151,58,.2)}50%{box-shadow:0 0 60px rgba(201,151,58,.5)}}
+#loading h1{color:var(--gold);font-size:18px;font-weight:900;text-align:center;line-height:1.7}
+#loading p{color:rgba(255,255,255,.45);font-size:12px;margin-top:6px}
+.ld-status{margin-top:30px;color:rgba(255,255,255,.5);font-size:12px;text-align:center}
+.ld-bar{width:200px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-top:10px}
+.ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),#e8c96a);transition:width .8s ease}
+
+/* LOGIN */
+#loginPage{position:fixed;inset:0;z-index:200;background:linear-gradient(150deg,#0d1b2a,#1a2f45);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.login-logo{font-size:60px;margin-bottom:14px}
+#loginPage h2{color:var(--gold);font-size:18px;font-weight:900;text-align:center;line-height:1.7;margin-bottom:4px}
+#loginPage p{color:rgba(255,255,255,.4);font-size:12px;text-align:center;margin-bottom:36px}
+.lform{width:100%;max-width:340px}
+.lform .fc{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff}
+.lform .fc::placeholder{color:rgba(255,255,255,.35)}
+.lform .fl{color:rgba(255,255,255,.65)}
+
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh}
+
+/* TOPBAR */
+.topbar{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.25)}
+.tb-title{font-size:14px;font-weight:700;color:var(--gold);text-align:center}
+.tb-user{display:flex;align-items:center;gap:6px}
+.tb-name{font-size:11.5px;color:rgba(255,255,255,.75);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rbadge{padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.r-admin{background:var(--gold);color:var(--navy)}
+.r-leader{background:var(--blue2);color:#fff}
+.tb-sync{background:none;border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;padding:5px;line-height:1}
+.tb-logout{background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;cursor:pointer;padding:5px;line-height:1}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green2);display:inline-block;margin-right:2px;animation:pulse2 2s infinite}
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:#fff;border-top:1px solid var(--gray2);display:flex;height:62px;box-shadow:0 -3px 16px rgba(0,0,0,.07)}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--text2);transition:all .2s;border:none;background:none;font-family:'Cairo',sans-serif;font-size:9.5px;font-weight:600;position:relative}
+.bni .ic{font-size:21px;transition:transform .2s}
+.bni.active{color:var(--blue2)}
+.bni.active .ic{transform:translateY(-2px)}
+.bni.active::before{content:'';position:absolute;top:0;left:25%;right:25%;height:3px;background:var(--blue2);border-radius:0 0 4px 4px}
+.bni .ndot{position:absolute;top:8px;right:calc(50% - 14px);width:7px;height:7px;border-radius:50%;background:var(--red2);border:1.5px solid #fff}
+
+/* MAIN */
+.main{flex:1;padding:14px 14px 78px}
+.page{display:none;animation:fadeUp .28s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION TITLE */
+.stitle{font-size:17px;font-weight:800;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* KPI */
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.kcard{background:#fff;border-radius:var(--r);padding:14px;box-shadow:var(--sh2);border-right:4px solid transparent;cursor:pointer;transition:transform .15s}
+.kcard:active{transform:scale(.98)}
+.kcard.kb{border-right-color:var(--blue2)}
+.kcard.kg{border-right-color:var(--green2)}
+.kcard.kr{border-right-color:var(--red2)}
+.kcard.ko{border-right-color:var(--orange)}
+.kcard.kgo{border-right-color:var(--gold)}
+.kcard .ki{font-size:26px;margin-bottom:6px}
+.kcard .kv{font-size:24px;font-weight:900;color:var(--navy);line-height:1}
+.kcard .kl{font-size:10.5px;color:var(--text2);margin-top:3px;font-weight:600}
+
+/* CARD */
+.card{background:#fff;border-radius:var(--r);padding:14px;box-shadow:var(--sh2);margin-bottom:11px}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--gray2)}
+.card-tt{font-size:13.5px;font-weight:700;color:var(--navy)}
+
+/* SEARCH */
+.sbar{background:#fff;border-radius:var(--r2);padding:9px 13px;display:flex;align-items:center;gap:9px;box-shadow:var(--sh2);margin-bottom:13px;border:2px solid transparent;transition:border-color .2s}
+.sbar:focus-within{border-color:var(--blue2)}
+.sbar input{flex:1;border:none;outline:none;font-family:'Cairo',sans-serif;font-size:13.5px;color:var(--text);background:none}
+
+/* TABS */
+.tabs{display:flex;gap:7px;margin-bottom:13px;overflow-x:auto;padding-bottom:3px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabb{flex-shrink:0;padding:7px 14px;border-radius:20px;border:none;font-family:'Cairo',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .2s;background:#fff;color:var(--text2);box-shadow:var(--sh2)}
+.tabb.active{background:var(--navy);color:#fff}
+
+/* MEMBER CARD */
+.mcard{background:#fff;border-radius:var(--r);padding:13px 14px;box-shadow:var(--sh2);margin-bottom:9px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .2s;border:1.5px solid transparent}
+.mcard:active{border-color:var(--blue2);transform:scale(.99)}
+.mav{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden}
+.mav img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.minfo{flex:1;min-width:0}
+.mname{font-size:13.5px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msub{font-size:10.5px;color:var(--text2);margin-top:2px}
+.mbal{text-align:left;flex-shrink:0}
+.bp{color:var(--green2);font-size:12.5px;font-weight:800}
+.bn{color:var(--red2);font-size:12.5px;font-weight:800}
+.bz{color:var(--text2);font-size:12.5px;font-weight:600}
+.bl{font-size:9.5px;color:var(--text2);text-align:left}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2.5px 9px;border-radius:20px;font-size:10.5px;font-weight:700}
+.b-act{background:var(--greenli);color:var(--green2)}
+.b-ina{background:var(--redli);color:var(--red2)}
+.b-paid{background:var(--greenli);color:var(--green2)}
+.b-due{background:var(--redli);color:var(--red2)}
+.b-par{background:var(--orangeli);color:var(--orange)}
+.b-old{background:var(--purpleli);color:var(--purple)}
+.b-pen{background:var(--goldli);color:var(--gold)}
+.b-adm{background:linear-gradient(135deg,var(--gold),#e8c96a);color:var(--navy)}
+.b-lea{background:var(--blue2);color:#fff}
+.b-ok{background:var(--greenli);color:var(--green2)}
+
+/* BUTTONS */
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 18px;border-radius:var(--r2);font-family:'Cairo',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;border:none;transition:all .2s;width:100%}
+.btn:active{transform:scale(.97)}
+.btn-p{background:linear-gradient(135deg,var(--blue2),var(--navy));color:#fff;box-shadow:0 4px 14px rgba(21,101,192,.35)}
+.btn-s{background:linear-gradient(135deg,var(--green2),var(--green));color:#fff;box-shadow:0 4px 14px rgba(46,125,50,.3)}
+.btn-d{background:linear-gradient(135deg,var(--red2),var(--red));color:#fff;box-shadow:0 4px 14px rgba(198,40,40,.3)}
+.btn-g{background:linear-gradient(135deg,var(--gold),#e8c96a);color:var(--navy);box-shadow:0 4px 14px rgba(201,151,58,.3)}
+.btn-o{background:#fff;color:var(--blue2);border:2px solid var(--blue2)}
+.btn-or{background:#fff;color:var(--red2);border:2px solid var(--red2)}
+.btn-sm{padding:7px 13px;font-size:11.5px;border-radius:8px;width:auto}
+.btn-xs{padding:5px 10px;font-size:10.5px;border-radius:7px;width:auto}
+
+/* FAB */
+.fab{position:fixed;bottom:72px;left:18px;z-index:99;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8c96a);color:var(--navy);font-size:26px;border:none;cursor:pointer;box-shadow:0 5px 18px rgba(201,151,58,.45);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.fab:active{transform:scale(.9)}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:22px 22px 0 0;padding:20px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s ease}
+.overlay.open .modal{transform:translateY(0)}
+.mhandle{width:38px;height:4px;background:var(--gray2);border-radius:2px;margin:0 auto 18px}
+.mtitle{font-size:17px;font-weight:800;color:var(--navy);margin-bottom:18px}
+
+/* FORM */
+.fg{margin-bottom:14px}
+.fl{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:5px;display:block}
+.fc{width:100%;padding:11px 13px;border:2px solid var(--gray2);border-radius:var(--r2);font-family:'Cairo',sans-serif;font-size:13.5px;color:var(--text);background:#fff;outline:none;transition:border-color .2s;appearance:none}
+.fc:focus{border-color:var(--blue2)}
+select.fc{cursor:pointer;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:left 10px center;background-size:16px;padding-left:32px}
+
+/* DETAIL */
+.det-hdr{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--r);padding:18px 14px;margin-bottom:14px;color:#fff;text-align:center}
+.det-av{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8c96a);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:var(--navy);margin:0 auto 11px;box-shadow:0 4px 14px rgba(0,0,0,.25);overflow:hidden}
+.det-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.det-name{font-size:17px;font-weight:800}
+.det-sub{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:3px}
+
+/* BALANCE */
+.balbox{border-radius:var(--r);padding:15px;margin-bottom:12px;text-align:center}
+.balbox.pos{background:var(--greenli);border:2px solid var(--green2)}
+.balbox.neg{background:var(--redli);border:2px solid var(--red2)}
+.balbox.zer{background:var(--gray);border:2px solid var(--gray3)}
+.balbox .bico{font-size:30px;margin-bottom:3px}
+.balbox .bamt{font-size:26px;font-weight:900}
+.balbox.pos .bamt{color:var(--green2)}
+.balbox.neg .bamt{color:var(--red2)}
+.balbox .blbl{font-size:11.5px;color:var(--text2);margin-top:3px;font-weight:600}
+.balbox .bmo{font-size:12px;font-weight:700;margin-top:7px;padding:3px 11px;background:rgba(0,0,0,.06);border-radius:20px;display:inline-block}
+
+/* STATS */
+.srow{display:flex;gap:8px;margin-bottom:12px}
+.sbox{flex:1;background:#fff;border-radius:var(--r2);padding:11px;text-align:center;box-shadow:var(--sh2)}
+.sbox .sv{font-size:18px;font-weight:900;color:var(--navy)}
+.sbox .sl{font-size:10px;color:var(--text2);font-weight:600;margin-top:2px}
+
+/* INFO ROW */
+.irow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--gray2)}
+.irow:last-child{border-bottom:none}
+.ilbl{font-size:11.5px;color:var(--text2);font-weight:600}
+.ival{font-size:12.5px;font-weight:700;color:var(--navy)}
+
+/* DEBT ITEM */
+.ditem{background:#fff;border-radius:var(--r2);padding:11px 13px;margin-bottom:7px;box-shadow:var(--sh2);display:flex;align-items:center;justify-content:space-between;border-right:4px solid transparent;cursor:pointer;transition:all .2s}
+.ditem:active{transform:scale(.99)}
+.ditem.dd{border-right-color:var(--red2)}
+.ditem.dp{border-right-color:var(--orange)}
+.ditem.dk{border-right-color:var(--green2)}
+.ditem.do{border-right-color:var(--purple)}
+.dm{font-size:12.5px;font-weight:700;color:var(--navy)}
+.dr{font-size:10.5px;color:var(--text2);margin-top:2px}
+.da{font-size:13.5px;font-weight:800}
+.ditem.dd .da{color:var(--red2)}
+.ditem.dp .da{color:var(--orange)}
+.ditem.dk .da{color:var(--green2)}
+.ditem.do .da{color:var(--purple)}
+
+/* PAYMENT ITEM */
+.pitem{background:#fff;border-radius:var(--r2);padding:11px 13px;margin-bottom:7px;box-shadow:var(--sh2);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .2s}
+.pitem:active{transform:scale(.99)}
+.pdt{font-size:11.5px;color:var(--text2)}
+.pme{font-size:10.5px;color:var(--text2);margin-top:2px}
+.pamt{font-size:13.5px;font-weight:800;color:var(--green2)}
+
+/* PROGRESS */
+.pbar-wrap{margin:6px 0}
+.pbar-lbl{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text2);margin-bottom:3px}
+.pbar{height:7px;background:var(--gray2);border-radius:4px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue2),var(--gold));transition:width 1.2s ease}
+
+/* EMPTY */
+.empty{text-align:center;padding:36px 16px}
+.empty .ei{font-size:44px;margin-bottom:10px}
+.empty .et{font-size:13px;color:var(--text2);font-weight:600}
+
+/* ALERT */
+.alert{position:fixed;top:66px;left:14px;right:14px;z-index:999;padding:13px 15px;border-radius:var(--r2);font-size:12.5px;font-weight:700;text-align:center;transform:translateY(-16px);opacity:0;transition:all .3s;pointer-events:none}
+.alert.show{transform:translateY(0);opacity:1}
+.al-ok{background:var(--green2);color:#fff;box-shadow:0 4px 18px rgba(46,125,50,.4)}
+.al-err{background:var(--red2);color:#fff;box-shadow:0 4px 18px rgba(198,40,40,.4)}
+.al-inf{background:var(--blue2);color:#fff;box-shadow:0 4px 18px rgba(25,118,210,.4)}
+
+/* BACK */
+.back-btn{background:none;border:none;color:var(--blue2);font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:11px;display:flex;align-items:center;gap:4px;padding:0}
+
+/* PHOTO UPLOAD */
+.phu{width:72px;height:72px;border-radius:50%;border:2px dashed var(--gray3);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;margin:0 auto 8px;background:var(--gray);transition:border-color .2s}
+.phu:hover{border-color:var(--blue2)}
+.phu img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.phu span{font-size:28px}
+
+/* MONTH GRID */
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.mbox{background:#fff;border-radius:8px;padding:7px 4px;text-align:center;box-shadow:var(--sh2);font-size:10px;font-weight:700;border:1.5px solid transparent}
+.mbox.mpaid{background:var(--greenli);color:var(--green2);border-color:var(--green2)}
+.mbox.mdue{background:var(--redli);color:var(--red2);border-color:var(--red2)}
+.mbox.mpar{background:var(--orangeli);color:var(--orange);border-color:var(--orange)}
+.mbox.mem{color:var(--text2)}
+
+/* TOGGLE */
+.trow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray2)}
+.trow:last-child{border-bottom:none}
+.tog{width:44px;height:24px;border-radius:12px;background:var(--gray3);position:relative;cursor:pointer;transition:background .2s;border:none;flex-shrink:0}
+.tog.on{background:var(--green2)}
+.tog::after{content:'';position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.tog.on::after{transform:translateX(-20px)}
+
+/* NOTIF ITEM */
+.nitem{background:#fff;border-radius:var(--r2);padding:10px 12px;margin-bottom:7px;box-shadow:var(--sh2);display:flex;gap:10px;align-items:flex-start}
+.nico{font-size:22px;flex-shrink:0}
+.nmsg{font-size:11.5px;color:var(--text);line-height:1.6}
+.ntime{font-size:10px;color:var(--text2);margin-top:3px}
+
+/* SYNC STATUS */
+.sync-bar{background:var(--navy2);color:rgba(255,255,255,.7);font-size:11px;text-align:center;padding:4px;display:none}
+.sync-bar.show{display:block}
+
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:var(--gray3);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="ld-ring"><span style="font-size:52px">🌹</span></div>
+  <h1>هيئة السيدة زينب<br>عليها السلام</h1>
+  <p>نظام إدارة المشتركين الاحترافي</p>
+  <div class="ld-status" id="ldStatus">جاري الاتصال بقاعدة البيانات...</div>
+  <div class="ld-bar"><div class="ld-fill" id="ldFill"></div></div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <div class="login-logo">🌹</div>
+  <h2>هيئة السيدة زينب<br>عليها السلام</h2>
+  <p>يرجى تسجيل الدخول للمتابعة</p>
+  <div class="lform">
+    <div class="fg"><label class="fl">اسم المستخدم</label><input type="text" id="lu" class="fc" placeholder="اسم المستخدم" autocomplete="username"></div>
+    <div class="fg"><label class="fl">كلمة المرور</label><input type="password" id="lp" class="fc" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-g" onclick="doLogin()" style="margin-top:6px">🔑 دخول</button>
+    <p style="color:rgba(255,255,255,.25);font-size:11px;text-align:center;margin-top:14px">admin / admin123</p>
+  </div>
+</div>
+
+<!-- ALERT -->
+<div class="alert" id="alertBox"></div>
+
+<!-- APP -->
+<div id="app">
+  <div class="sync-bar" id="syncBar">🔄 جاري المزامنة...</div>
+  <div class="topbar">
+    <div class="tb-user">
+      <span class="tb-name" id="tbName"></span>
+      <span class="rbadge" id="tbBadge"></span>
+    </div>
+    <div class="tb-title">🌹 هيئة السيدة زينب</div>
+    <div style="display:flex;gap:4px">
+      <span id="syncDot" title="متصل بالسحابة"><span class="sync-dot"></span></span>
+      <button class="tb-logout" onclick="doLogout()" title="خروج">🚪</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="stitle"><span>📊</span>لوحة التحكم</div>
+      <div class="kgrid" id="kpiGrid"></div>
+      <div id="homeGroups"></div>
+      <div class="card"><div class="card-hd"><div class="card-tt">🕐 آخر الدفعات</div></div><div id="homeRecent"></div></div>
+    </div>
+
+    <!-- MEMBERS -->
+    <div class="page" id="page-members">
+      <div class="stitle"><span>👥</span>المشتركون</div>
+      <div class="sbar"><span style="color:var(--text2);font-size:17px">🔍</span><input type="text" placeholder="بحث بالاسم أو الهاتف..." id="msearch" oninput="filterMembers()"></div>
+      <div class="tabs" id="memberTabs"></div>
+      <div id="membersList"></div>
+    </div>
+
+    <!-- DETAIL -->
+    <div class="page" id="page-detail">
+      <button class="back-btn" onclick="goBack('members')">← رجوع</button>
+      <div id="detailContent"></div>
+    </div>
+
+    <!-- DEBTS -->
+    <div class="page" id="page-debts">
+      <div class="stitle"><span>💳</span>الديون</div>
+      <div class="tabs" id="debtTabs">
+        <button class="tabb active" onclick="setDF('all',this)">الكل</button>
+        <button class="tabb" onclick="setDF('مستحق',this)">مستحقة 🔴</button>
+        <button class="tabb" onclick="setDF('مدفوع_جزئي',this)">جزئي ⚠️</button>
+        <button class="tabb" onclick="setDF('مدفوع_كلي',this)">مدفوعة ✅</button>
+        <button class="tabb" onclick="setDF('دين_سابق',this)">سابقة 📋</button>
+      </div>
+      <div id="debtsList"></div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="page" id="page-payments">
+      <div class="stitle"><span>💰</span>الدفعات</div>
+      <div id="paymentsList"></div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="page" id="page-notif">
+      <div class="stitle"><span>📨</span>الإشعارات</div>
+      <div id="notifContent"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="stitle"><span>⚙️</span>الإعدادات</div>
+      <div id="settingsContent"></div>
+    </div>
+  </div>
+
+  <nav class="bnav">
+    <button class="bni active" onclick="nav('home',this)" id="nb-home"><span class="ic">🏠</span>الرئيسية</button>
+    <button class="bni" onclick="nav('members',this)" id="nb-members"><span class="ic">👥</span>المشتركون</button>
+    <button class="bni" onclick="nav('debts',this)" id="nb-debts"><span class="ic">💳</span>الديون</button>
+    <button class="bni" onclick="nav('payments',this)" id="nb-payments"><span class="ic">💰</span>الدفعات</button>
+    <button class="bni" onclick="nav('settings',this)" id="nb-settings"><span class="ic">⚙️</span>الإعدادات</button>
+  </nav>
+  <button class="fab" id="fabBtn" onclick="openFab()" style="display:none">＋</button>
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="ov" onclick="closeOvClick(event)">
+  <div class="modal"><div class="mhandle"></div><div id="mb"></div></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// FIREBASE CONFIG
+// ═══════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyCYZXQFi97cz7Q7wQwbhq0RisHXMDOgVCw",
+  authDomain: "zainab-haia-7b9d5.firebaseapp.com",
+  databaseURL: "https://zainab-haia-7b9d5-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "zainab-haia-7b9d5",
+  storageBucket: "zainab-haia-7b9d5.firebasestorage.app",
+  messagingSenderId: "360098880295",
+  appId: "1:360098880295:web:72bb1b53516bfed364e702"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ═══════════════════════════════════════
+// DATA STATE — in memory, synced from Firebase
+// ═══════════════════════════════════════
+let STATE = {
+  users: {},
+  groups: {},
+  members: {},
+  debts: {},
+  payments: {},
+  notifications: {},
+  settings: {
+    tgToken: '',
+    tgAdminChat: '',
+    defaultMonthly: 10000,
+    currency: 'د.ع',
+    notifyPayment: true,
+    notifyDebt: true,
+    notifyWelcome: true,
+    notifyMonthlyReport: true
+  }
+};
+
+let SESSION = null;
+let CP = 'home';
+let groupFilter = 'all';
+let debtFilter = 'all';
+let realtimeListeners = [];
+
+// ═══════════════════════════════════════
+// FIREBASE OPERATIONS
+// ═══════════════════════════════════════
+function fbSet(path, data) {
+  return db.ref(path).set(data);
+}
+
+function fbPush(path, data) {
+  return db.ref(path).push(data);
+}
+
+function fbUpdate(path, data) {
+  return db.ref(path).update(data);
+}
+
+function fbRemove(path) {
+  return db.ref(path).remove();
+}
+
+function fbGet(path) {
+  return db.ref(path).once('value').then(s => s.val());
+}
+
+// Listen to a path and update STATE
+function fbListen(path, stateKey) {
+  const ref = db.ref(path);
+  ref.on('value', snap => {
+    const val = snap.val();
+    STATE[stateKey] = val || {};
+    renderAll();
+  });
+  realtimeListeners.push({ ref, stateKey });
+}
+
+// ═══════════════════════════════════════
+// INIT — Default data if empty
+// ═══════════════════════════════════════
+async function initDefaultData() {
+  const exists = await fbGet('users');
+  if (exists) return; // Already initialized
+
+  setLdStatus('جاري تهيئة قاعدة البيانات...', 60);
+
+  const defaultUsers = {
+    'U001': { id:'U001', uname:'admin', pass:'admin123', name:'المدير العام', role:'admin', gid:'', email:'mohammedhanon94@gmail.com', phone:'07700000001', active:true, created:td() }
+  };
+  const defaultGroups = {
+    'G001': { id:'G001', name:'مجموعة بغداد', lid:'', active:true, created:td() },
+    'G002': { id:'G002', name:'مجموعة البصرة', lid:'', active:true, created:td() },
+    'G003': { id:'G003', name:'مجموعة الكوفة', lid:'', active:true, created:td() }
+  };
+  const defaultSettings = {
+    tgToken:'', tgAdminChat:'', defaultMonthly:10000, currency:'د.ع',
+    notifyPayment:true, notifyDebt:true, notifyWelcome:true, notifyMonthlyReport:true
+  };
+
+  await fbSet('users', defaultUsers);
+  await fbSet('groups', defaultGroups);
+  await fbSet('settings', defaultSettings);
+  await fbSet('members', {});
+  await fbSet('debts', {});
+  await fbSet('payments', {});
+  await fbSet('notifications', {});
+}
+
+// ═══════════════════════════════════════
+// SESSION
+// ═══════════════════════════════════════
+function getSess() { return SESSION; }
+function setSess(u) { SESSION = u; sessionStorage.setItem('z_sess', JSON.stringify(u)); }
+
+function doLogin() {
+  const u = document.getElementById('lu').value.trim();
+  const p = document.getElementById('lp').value.trim();
+  if (!u || !p) { showAlert('❌ يرجى إدخال اسم المستخدم وكلمة المرور', 'err'); return; }
+
+  const users = Object.values(STATE.users || {});
+  const user = users.find(x => x.uname === u && x.pass === p && x.active);
+  if (!user) { showAlert('❌ اسم المستخدم أو كلمة المرور غلط', 'err'); return; }
+  setSess(user);
+  document.getElementById('loginPage').style.display = 'none';
+  bootApp();
+}
+
+function doLogout() {
+  if (!confirm('هل تريد تسجيل الخروج؟')) return;
+  SESSION = null;
+  sessionStorage.removeItem('z_sess');
+  location.reload();
+}
+
+// ═══════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════
+function bootApp() {
+  const sess = getSess();
+  if (!sess) return;
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('tbName').textContent = sess.name;
+  const bd = document.getElementById('tbBadge');
+  bd.textContent = sess.role === 'admin' ? '👑 مدير' : '🔑 معاون';
+  bd.className = 'rbadge ' + (sess.role === 'admin' ? 'r-admin' : 'r-leader');
+  renderAll();
+}
+
+// ═══════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════
+function nav(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bni').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (btn) btn.classList.add('active');
+  CP = page;
+  document.getElementById('fabBtn').style.display = ['members','debts','payments'].includes(page) ? 'flex' : 'none';
+}
+
+function goBack(page) {
+  nav(page, document.getElementById('nb-' + page));
+}
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function arr(obj) { return Object.values(obj || {}); }
+
+function visMembers() {
+  const sess = getSess(); if (!sess) return [];
+  const ms = arr(STATE.members);
+  if (sess.role === 'leader') return ms.filter(m => m.gid === sess.gid);
+  return ms;
+}
+
+function visMembersByGroup(gid) {
+  const sess = getSess(); if (!sess) return [];
+  if (sess.role === 'leader') return arr(STATE.members).filter(m => m.gid === sess.gid);
+  if (gid && gid !== 'all') return arr(STATE.members).filter(m => m.gid === gid);
+  return arr(STATE.members);
+}
+
+function visDebts() {
+  const sess = getSess(); if (!sess) return [];
+  const ds = arr(STATE.debts);
+  if (sess.role === 'leader') return ds.filter(d => d.gid === sess.gid);
+  return ds;
+}
+
+function visPays() {
+  const sess = getSess(); if (!sess) return [];
+  const ps = arr(STATE.payments);
+  if (sess.role === 'leader') return ps.filter(p => p.gid === sess.gid);
+  return ps;
+}
+
+function calcBal(mid) {
+  const m = STATE.members[mid]; if (!m) return { paid:0, debts:0, bal:0, months:0 };
+  const paid = arr(STATE.payments).filter(p => p.mid === mid && p.status === 'مؤكد').reduce((s,p)=>s+p.amount,0);
+  const debts = (m.oldDebt||0) + arr(STATE.debts).filter(d => d.mid === mid).reduce((s,d)=>s+d.amount,0);
+  const bal = paid - debts;
+  const months = m.monthly > 0 ? Math.floor(paid / m.monthly) : 0;
+  return { paid, debts, bal, months };
+}
+
+function avatarColor(id) {
+  const c = ['#1565c0','#2e7d32','#6a1b9a','#c62828','#e65100','#00695c','#4527a0'];
+  let h = 0; for (let i=0;i<id.length;i++) h=id.charCodeAt(i)+((h<<5)-h);
+  return c[Math.abs(h)%c.length];
+}
+
+function fmt(n) {
+  if (typeof n !== 'number') n = parseInt(n)||0;
+  const neg = n<0; const abs = Math.abs(n);
+  return (neg?'-':'')+abs.toLocaleString('ar-IQ')+' '+(STATE.settings?.currency||'د.ع');
+}
+
+function fmtS(n) {
+  if (typeof n !== 'number') n = parseInt(n)||0;
+  const neg = n<0; const abs = Math.abs(n);
+  if (abs>=1000000) return (neg?'-':'')+(abs/1000000).toFixed(1)+'م';
+  if (abs>=1000) return (neg?'-':'')+(abs/1000).toFixed(0)+'ألف';
+  return (neg?'-':'')+abs.toLocaleString();
+}
+
+function td() { return new Date().toISOString().split('T')[0]; }
+
+function uid() { return Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,5).toUpperCase(); }
+
+function showAlert(msg, type='ok') {
+  const el = document.getElementById('alertBox');
+  el.textContent = msg; el.className = `alert al-${type} show`;
+  setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+function setSyncing(on) {
+  const bar = document.getElementById('syncBar');
+  bar.className = on ? 'sync-bar show' : 'sync-bar';
+}
+
+function setLdStatus(msg, pct) {
+  document.getElementById('ldStatus').textContent = msg;
+  document.getElementById('ldFill').style.width = pct + '%';
+}
+
+// ═══════════════════════════════════════
+// RENDER ALL
+// ═══════════════════════════════════════
+function renderAll() {
+  if (!getSess()) return;
+  renderHome();
+  renderMembers();
+  renderDebts();
+  renderPayments();
+  renderNotif();
+  renderSettings();
+}
+
+// ═══════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════
+function renderHome() {
+  const sess = getSess(); if (!sess) return;
+  const ms = visMembers();
+  const ds = visDebts();
+  const ps = visPays();
+  const totalDebts = ds.reduce((s,d)=>s+d.amount,0);
+  const totalPaid = ps.filter(p=>p.status==='مؤكد').reduce((s,p)=>s+p.amount,0);
+  const dueCount = ds.filter(d=>d.status==='مستحق').length;
+  const dueAmt = ds.filter(d=>d.status==='مستحق').reduce((s,d)=>s+d.amount,0);
+
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kcard kb"><div class="ki">👥</div><div class="kv">${ms.length}</div><div class="kl">إجمالي المشتركين</div></div>
+    <div class="kcard kg"><div class="ki">✅</div><div class="kv">${ms.filter(m=>m.status==='نشط').length}</div><div class="kl">المشتركون النشطون</div></div>
+    <div class="kcard kr"><div class="ki">🔴</div><div class="kv">${dueCount}</div><div class="kl">ديون مستحقة</div></div>
+    <div class="kcard kgo"><div class="ki">💰</div><div class="kv">${fmtS(totalPaid)}</div><div class="kl">إجمالي المقبوض</div></div>
+    <div class="kcard ko"><div class="ki">📊</div><div class="kv">${fmtS(totalDebts)}</div><div class="kl">إجمالي الديون</div></div>
+    <div class="kcard kr"><div class="ki">⚠️</div><div class="kv">${fmtS(dueAmt)}</div><div class="kl">المبلغ المستحق</div></div>
+  `;
+
+  let gh = '';
+  if (sess.role === 'admin') {
+    gh = `<div class="card"><div class="card-hd"><div class="card-tt">🏘️ تحصيل المجموعات</div></div>`;
+    arr(STATE.groups).forEach(g => {
+      const gPaid = ps.filter(p=>p.gid===g.id&&p.status==='مؤكد').reduce((s,p)=>s+p.amount,0);
+      const gDebts = ds.filter(d=>d.gid===g.id).reduce((s,d)=>s+d.amount,0);
+      const pct = gDebts>0 ? Math.min(100,Math.round(gPaid/gDebts*100)) : 100;
+      const cnt = arr(STATE.members).filter(m=>m.gid===g.id).length;
+      gh += `<div style="margin-bottom:13px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12.5px;font-weight:700;color:var(--navy)">${g.name}</span><span style="font-size:10.5px;color:var(--text2)">${cnt} مشترك</span></div><div class="pbar-wrap"><div class="pbar-lbl"><span>التحصيل</span><span>${pct}%</span></div><div class="pbar"><div class="pbar-fill" data-w="${pct}" style="width:0"></div></div></div></div>`;
+    });
+    gh += '</div>';
+  }
+  document.getElementById('homeGroups').innerHTML = gh;
+  setTimeout(() => document.querySelectorAll('#homeGroups .pbar-fill').forEach(el => el.style.width = el.dataset.w+'%'), 120);
+
+  const recPays = visPays().sort((a,z)=>z.created?.localeCompare(a.created||'')||0).slice(0,5);
+  let rh = '';
+  if (!recPays.length) { rh = `<div class="empty"><div class="ei">📋</div><div class="et">لا توجد دفعات بعد</div></div>`; }
+  else recPays.forEach(p => {
+    const m = STATE.members[p.mid];
+    rh += `<div class="irow"><div><div style="font-size:12.5px;font-weight:700">${m?m.name:''}</div><div style="font-size:10.5px;color:var(--text2)">${p.date} · ${p.method}</div></div><div style="color:var(--green2);font-weight:800;font-size:12.5px">+${fmt(p.amount)}</div></div>`;
+  });
+  document.getElementById('homeRecent').innerHTML = rh;
+}
+
+// ═══════════════════════════════════════
+// MEMBERS
+// ═══════════════════════════════════════
+function renderMembers() {
+  const sess = getSess(); if (!sess) return;
+  if (sess.role === 'admin') {
+    const allMs = arr(STATE.members);
+    let th = `<button class="tabb active" onclick="setGF('all',this)">الكل (${allMs.length})</button>`;
+    arr(STATE.groups).forEach(g => {
+      const c = allMs.filter(m=>m.gid===g.id).length;
+      th += `<button class="tabb" onclick="setGF('${g.id}',this)">${g.name} (${c})</button>`;
+    });
+    document.getElementById('memberTabs').innerHTML = th;
+  } else {
+    document.getElementById('memberTabs').innerHTML = '';
+  }
+  renderMList(visMembersByGroup(groupFilter));
+}
+
+function setGF(gid, btn) {
+  groupFilter = gid;
+  document.querySelectorAll('#memberTabs .tabb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('msearch').value = '';
+  renderMList(visMembersByGroup(gid));
+}
+
+function filterMembers() {
+  const q = document.getElementById('msearch').value.toLowerCase();
+  let ms = visMembersByGroup(groupFilter);
+  if (q) ms = ms.filter(m=>m.name.includes(q)||m.phone.includes(q));
+  renderMList(ms);
+}
+
+function renderMList(ms) {
+  if (!ms.length) { document.getElementById('membersList').innerHTML=`<div class="empty"><div class="ei">👤</div><div class="et">لا يوجد مشتركون</div></div>`; return; }
+  let h = '';
+  ms.sort((a,z)=>a.name.localeCompare(z.name,'ar')).forEach(m => {
+    const b = calcBal(m.id);
+    const g = STATE.groups[m.gid];
+    let bc='bz', bt='مسوّى';
+    if (b.bal>0){bc='bp';bt='+'+fmt(b.bal)}
+    else if (b.bal<0){bc='bn';bt=fmt(b.bal)}
+    const avBg = m.photo ? 'transparent' : avatarColor(m.id);
+    const avContent = m.photo ? `<img src="${m.photo}" alt="">` : m.name.charAt(0);
+    h += `<div class="mcard" onclick="openDet('${m.id}')">
+      <div class="mav" style="background:${avBg}">${avContent}</div>
+      <div class="minfo">
+        <div class="mname">${m.name}</div>
+        <div class="msub">${g?g.name:''} · ${(m.monthly||0).toLocaleString()} ${STATE.settings?.currency||'د.ع'}/شهر</div>
+        <span class="badge ${m.status==='نشط'?'b-act':'b-ina'}" style="margin-top:3px;font-size:9.5px">${m.status}</span>
+      </div>
+      <div class="mbal"><div class="${bc}">${bt}</div><div class="bl">الرصيد</div></div>
+    </div>`;
+  });
+  document.getElementById('membersList').innerHTML = h;
+}
+
+// ═══════════════════════════════════════
+// MEMBER DETAIL
+// ═══════════════════════════════════════
+function openDet(mid) {
+  const m = STATE.members[mid]; if (!m) return;
+  const b = calcBal(mid);
+  const g = STATE.groups[m.gid];
+  const mDebts = arr(STATE.debts).filter(d=>d.mid===mid).sort((a,z)=>z.year-a.year||z.month-a.month);
+  const mPays = arr(STATE.payments).filter(p=>p.mid===mid&&p.status==='مؤكد').sort((a,z)=>z.date.localeCompare(a.date));
+  const mNames=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+  let bcls='zer', bico='⚖️', blbl='الحساب مسوّى';
+  if (b.bal>0){bcls='pos';bico='✅';blbl='رصيد إيجابي — دفع مقدماً'}
+  else if (b.bal<0){bcls='neg';bico='🔴';blbl='رصيد سالب — عليه دين'}
+
+  // Month grid
+  const now = new Date();
+  let mg = '<div class="mgrid">';
+  for (let mo=1;mo<=12;mo++) {
+    const d = mDebts.find(x=>x.year===now.getFullYear()&&x.month===mo);
+    let cls='mem';
+    if (d){if(d.status==='مدفوع_كلي')cls='mpaid';else if(d.status==='مدفوع_جزئي')cls='mpar';else if(d.status==='مستحق')cls='mdue';}
+    mg += `<div class="mbox ${cls}">${mNames[mo-1].substring(0,3)}</div>`;
+  }
+  mg += '</div>';
+
+  // Debts
+  const sm={'مستحق':'dd','مدفوع_جزئي':'dp','مدفوع_كلي':'dk','دين_سابق':'do','ملغي':'do'};
+  const si={'مستحق':'🔴','مدفوع_جزئي':'⚠️','مدفوع_كلي':'✅','دين_سابق':'📋','ملغي':'❌'};
+  const sb={'مستحق':'b-due','مدفوع_جزئي':'b-par','مدفوع_كلي':'b-paid','دين_سابق':'b-old','ملغي':'b-ina'};
+  let dH = mDebts.length ? '' : `<div class="empty"><div class="ei">✅</div><div class="et">لا توجد ديون</div></div>`;
+  mDebts.forEach(d => {
+    dH += `<div class="ditem ${sm[d.status]||''}" onclick="editDebtSt('${d.id}','${mid}')">
+      <div><div class="dm">${d.year}/${String(d.month).padStart(2,'0')} — ${mNames[d.month-1]}</div><div class="dr">${si[d.status]||''} ${d.reason}</div></div>
+      <div style="text-align:left"><div class="da">${fmt(d.amount)}</div><span class="badge ${sb[d.status]||'b-ina'}" style="font-size:9.5px">${d.status}</span></div>
+    </div>`;
+  });
+
+  // Payments
+  let pH = mPays.length ? '' : `<div class="empty"><div class="ei">💳</div><div class="et">لا توجد دفعات</div></div>`;
+  mPays.forEach(p => {
+    pH += `<div class="pitem">
+      <div><div style="font-size:12.5px;font-weight:700;color:var(--navy)">${p.date}</div><div class="pme">💳 ${p.method}${p.note?' · '+p.note:''}</div></div>
+      <div class="pamt">+${fmt(p.amount)}</div>
+    </div>`;
+  });
+
+  const avBg = m.photo ? 'transparent' : avatarColor(m.id);
+  const avContent = m.photo ? `<img src="${m.photo}" alt="">` : m.name.charAt(0);
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="det-hdr">
+      <div class="det-av" style="background:${avBg}">${avContent}</div>
+      <div class="det-name">${m.name}</div>
+      <div class="det-sub">${g?g.name:''}</div>
+      <span class="badge ${m.status==='نشط'?'b-act':'b-ina'}" style="margin-top:7px">${m.status}</span>
+    </div>
+
+    <div class="balbox ${bcls}">
+      <div class="bico">${bico}</div>
+      <div class="bamt">${b.bal>=0?'+':''}${fmt(b.bal)}</div>
+      <div class="blbl">${blbl}</div>
+      ${b.bal>0?`<div class="bmo">مدفوع مقدماً: ${b.months} شهر</div>`:''}
+    </div>
+
+    <div class="srow">
+      <div class="sbox"><div class="sv" style="color:var(--green2);font-size:15px">${fmt(b.paid)}</div><div class="sl">إجمالي المدفوع</div></div>
+      <div class="sbox"><div class="sv" style="color:var(--red2);font-size:15px">${fmt(b.debts)}</div><div class="sl">إجمالي الديون</div></div>
+      <div class="sbox"><div class="sv" style="color:var(--blue2)">${b.months}</div><div class="sl">أشهر مدفوعة</div></div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:13px">
+      <button class="btn btn-s" style="flex:1" onclick="openAddPay('${mid}')">💰 تسجيل دفعة</button>
+      <button class="btn btn-p" style="flex:1" onclick="openAddDebt('${mid}')">➕ إضافة دين</button>
+    </div>
+
+    <div class="card">
+      <div class="card-hd"><div class="card-tt">📋 بيانات المشترك</div><button class="btn btn-o btn-sm" onclick="openEditM('${mid}')">✏️ تعديل</button></div>
+      <div class="irow"><span class="ilbl">📱 الهاتف</span><span class="ival">${m.phone||'—'}</span></div>
+      <div class="irow"><span class="ilbl">💬 تيليغرام</span><span class="ival">${m.tgid||'—'}</span></div>
+      <div class="irow"><span class="ilbl">💰 الاشتراك الشهري</span><span class="ival">${fmt(m.monthly)}</span></div>
+      <div class="irow"><span class="ilbl">📅 تاريخ الانضمام</span><span class="ival">${m.joined}</span></div>
+      ${m.oldDebt>0?`<div class="irow"><span class="ilbl">📋 ديون سابقة</span><span class="ival" style="color:var(--red2)">${fmt(m.oldDebt)}</span></div>`:''}
+    </div>
+
+    <div class="card"><div class="card-hd"><div class="card-tt">📅 الأشهر — ${now.getFullYear()}</div></div>${mg}</div>
+
+    <div class="card"><div class="card-hd"><div class="card-tt">💳 سجل الديون (${mDebts.length})</div></div>${dH}</div>
+
+    <div class="card"><div class="card-hd"><div class="card-tt">💰 سجل الدفعات (${mPays.length})</div></div>${pH}</div>
+
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px">
+      ${m.status==='نشط'?`<button class="btn btn-or btn-sm" onclick="toggleSt('${mid}','موقوف')">⏸️ تجميد</button>`:`<button class="btn btn-s btn-sm" onclick="toggleSt('${mid}','نشط')">▶️ تفعيل</button>`}
+      <button class="btn btn-o btn-sm" onclick="openTransfer('${mid}')">🔄 نقل لمجموعة</button>
+      <button class="btn btn-o btn-sm" onclick="sendMemberReport('${mid}')">📨 تقرير Telegram</button>
+    </div>
+  `;
+
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-detail').classList.add('active');
+  document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));
+  CP = 'detail';
+  document.getElementById('fabBtn').style.display = 'none';
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════
+// DEBTS
+// ═══════════════════════════════════════
+function renderDebts() { setDF(debtFilter); }
+
+function setDF(st, btn) {
+  debtFilter = st;
+  if (btn) { document.querySelectorAll('#debtTabs .tabb').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+  let ds = visDebts();
+  if (st !== 'all') ds = ds.filter(d=>d.status===st);
+  const mNames=['','يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const sm={'مستحق':'dd','مدفوع_جزئي':'dp','مدفوع_كلي':'dk','دين_سابق':'do','ملغي':'do'};
+  const si={'مستحق':'🔴','مدفوع_جزئي':'⚠️','مدفوع_كلي':'✅','دين_سابق':'📋','ملغي':'❌'};
+  if (!ds.length) { document.getElementById('debtsList').innerHTML=`<div class="empty"><div class="ei">✅</div><div class="et">لا توجد ديون</div></div>`; return; }
+  let h = '';
+  ds.sort((a,z)=>z.year-a.year||z.month-a.month).forEach(d => {
+    const m = STATE.members[d.mid];
+    h += `<div class="ditem ${sm[d.status]||''}" onclick="openDet('${d.mid}')">
+      <div><div class="dm">${m?m.name:''}</div><div class="dr">${si[d.status]||''} ${mNames[d.month]||''} ${d.year} — ${d.reason}</div></div>
+      <div style="text-align:left"><div class="da">${fmt(d.amount)}</div></div>
+    </div>`;
+  });
+  document.getElementById('debtsList').innerHTML = h;
+}
+
+// ═══════════════════════════════════════
+// PAYMENTS
+// ═══════════════════════════════════════
+function renderPayments() {
+  const ps = visPays().sort((a,z)=>z.date.localeCompare(a.date));
+  if (!ps.length) { document.getElementById('paymentsList').innerHTML=`<div class="empty"><div class="ei">💳</div><div class="et">لا توجد دفعات</div></div>`; return; }
+  let h = '';
+  ps.forEach(p => {
+    const m = STATE.members[p.mid];
+    const g = STATE.groups[p.gid];
+    h += `<div class="pitem" onclick="openDet('${p.mid}')">
+      <div><div style="font-size:13px;font-weight:700;color:var(--navy)">${m?m.name:''}</div><div class="pdt">📅 ${p.date} · ${p.method}</div><div class="pme">${g?g.name:''}${p.note?' · '+p.note:''}</div></div>
+      <div style="text-align:left"><div class="pamt">+${fmt(p.amount)}</div><span class="badge b-${p.status==='مؤكد'?'ok':'pen'}" style="font-size:9.5px">${p.status}</span></div>
+    </div>`;
+  });
+  document.getElementById('paymentsList').innerHTML = h;
+}
+
+// ═══════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════
+function renderNotif() {
+  const sess = getSess(); if (!sess) return;
+  const ns = arr(STATE.notifications).sort((a,z)=>z.ts-a.ts).slice(0,30);
+  let h = `<div class="card"><div class="card-hd"><div class="card-tt">📨 سجل الإشعارات</div></div>`;
+  if (!ns.length) h += `<div class="empty"><div class="ei">📭</div><div class="et">لا توجد إشعارات بعد</div></div>`;
+  else ns.forEach(n => { h += `<div class="nitem"><div class="nico">${n.icon||'📨'}</div><div><div class="nmsg">${n.msg}</div><div class="ntime">⏰ ${n.time}</div></div></div>`; });
+  h += '</div>';
+  if (sess.role === 'admin') {
+    h += `<div class="card"><div class="card-hd"><div class="card-tt">📢 رسالة جماعية</div></div>
+      <div class="fg"><label class="fl">المجموعة</label><select id="bulk_g" class="fc"><option value="all">كل المجموعات</option>${arr(STATE.groups).map(g=>`<option value="${g.id}">${g.name}</option>`).join('')}</select></div>
+      <div class="fg"><label class="fl">نص الرسالة</label><textarea id="bulk_msg" class="fc" rows="4" placeholder="اكتب رسالتك هنا..."></textarea></div>
+      <button class="btn btn-p" onclick="sendBulk()">📤 إرسال للجميع</button>
+    </div>`;
+  }
+  document.getElementById('notifContent').innerHTML = h;
+}
+
+// ═══════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════
+function renderSettings() {
+  const sess = getSess(); if (!sess) return;
+  const s = STATE.settings || {};
+  let h = `<div class="card"><div class="card-hd"><div class="card-tt">👤 حسابي</div></div>
+    <div class="irow"><span class="ilbl">الاسم</span><span class="ival">${sess.name}</span></div>
+    <div class="irow"><span class="ilbl">الدور</span><span class="ival"><span class="badge ${sess.role==='admin'?'b-adm':'b-lea'}">${sess.role==='admin'?'👑 مدير':'🔑 معاون'}</span></span></div>
+    <div class="irow"><span class="ilbl">الإيميل</span><span class="ival">${sess.email||'—'}</span></div>
+    <button class="btn btn-o btn-sm" style="margin-top:10px;width:auto" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
+  </div>`;
+
+  if (sess.role === 'admin') {
+    h += `<div class="card"><div class="card-hd"><div class="card-tt">👥 المستخدمون</div><button class="btn btn-p btn-sm" onclick="openAddUser()">+ إضافة</button></div><div id="uList"></div></div>`;
+    h += `<div class="card"><div class="card-hd"><div class="card-tt">🏘️ المجموعات</div><button class="btn btn-p btn-sm" onclick="openAddGroup()">+ إضافة</button></div><div id="gList"></div></div>`;
+    h += `<div class="card"><div class="card-hd"><div class="card-tt">📅 ديون الشهر الحالي</div></div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:12px">إضافة دين شهري لجميع المشتركين النشطين</p>
+      <button class="btn btn-p" onclick="addMonthlyDebts()">⚡ إضافة ديون الشهر الحالي</button>
+    </div>`;
+    h += `<div class="card"><div class="card-hd"><div class="card-tt">🤖 Telegram</div></div>
+      <div class="fg"><label class="fl">Bot Token</label><input type="text" id="s_tok" class="fc" value="${s.tgToken||''}" placeholder="أدخل التوكن"></div>
+      <div class="fg"><label class="fl">Chat ID للتقارير</label><input type="text" id="s_chat" class="fc" value="${s.tgAdminChat||''}" placeholder="Chat ID الخاص بك للتقارير"></div>
+      <div style="margin-bottom:12px">
+        <div class="trow"><span style="font-size:12.5px;font-weight:600">إشعار عند تسجيل دفعة</span><button class="tog ${s.notifyPayment?'on':''}" id="t_pay" onclick="togSet('notifyPayment','t_pay')"></button></div>
+        <div class="trow"><span style="font-size:12.5px;font-weight:600">إشعار عند إضافة دين</span><button class="tog ${s.notifyDebt?'on':''}" id="t_dbt" onclick="togSet('notifyDebt','t_dbt')"></button></div>
+        <div class="trow"><span style="font-size:12.5px;font-weight:600">رسالة ترحيب للمشترك الجديد</span><button class="tog ${s.notifyWelcome?'on':''}" id="t_wel" onclick="togSet('notifyWelcome','t_wel')"></button></div>
+      </div>
+      <button class="btn btn-p" onclick="saveTG()">💾 حفظ إعدادات Telegram</button>
+    </div>`;
+    h += `<div class="card"><div class="card-hd"><div class="card-tt">⚙️ إعدادات عامة</div></div>
+      <div class="fg"><label class="fl">الاشتراك الشهري الافتراضي</label><input type="number" id="s_def" class="fc" value="${s.defaultMonthly||10000}"></div>
+      <button class="btn btn-o" onclick="saveGen()">💾 حفظ</button>
+    </div>`;
+    h += `<div class="card"><div class="card-hd"><div class="card-tt">📈 التقارير</div></div>
+      <button class="btn btn-s" style="margin-bottom:8px" onclick="sendMonthlyReports()">📨 إرسال تقارير Telegram للكل</button>
+      <button class="btn btn-o" onclick="exportBak()">💾 تصدير نسخة احتياطية</button>
+    </div>`;
+    h += `<div class="card" style="background:var(--blueli)"><div class="card-hd"><div class="card-tt">☁️ حالة قاعدة البيانات</div></div>
+      <div class="irow"><span class="ilbl">النوع</span><span class="ival" style="color:var(--green2)">Firebase Realtime Database ✅</span></div>
+      <div class="irow"><span class="ilbl">الحالة</span><span class="ival" style="color:var(--green2)">متصل ومزامن 🟢</span></div>
+      <div class="irow"><span class="ilbl">عدد المشتركين</span><span class="ival">${arr(STATE.members).length}</span></div>
+      <div class="irow"><span class="ilbl">عدد الديون</span><span class="ival">${arr(STATE.debts).length}</span></div>
+      <div class="irow"><span class="ilbl">عدد الدفعات</span><span class="ival">${arr(STATE.payments).length}</span></div>
+    </div>`;
+  }
+
+  document.getElementById('settingsContent').innerHTML = h;
+  if (sess.role === 'admin') { renderUList(); renderGList(); }
+}
+
+function renderUList() {
+  let h = '';
+  arr(STATE.users).forEach(u => {
+    const g = STATE.groups[u.gid];
+    h += `<div class="irow"><div><div style="font-weight:700;font-size:12.5px">${u.name}</div><div style="font-size:10.5px;color:var(--text2)">${u.uname} · ${g?g.name:'كل المجموعات'}</div></div><div style="display:flex;align-items:center;gap:7px"><span class="badge ${u.role==='admin'?'b-adm':'b-lea'}">${u.role}</span>${u.role!=='admin'?`<button class="btn btn-or btn-xs" onclick="delUser('${u.id}')">🗑️</button>`:''}</div></div>`;
+  });
+  const el = document.getElementById('uList'); if (el) el.innerHTML = h;
+}
+
+function renderGList() {
+  let h = '';
+  arr(STATE.groups).forEach(g => {
+    const cnt = arr(STATE.members).filter(m=>m.gid===g.id).length;
+    const leader = arr(STATE.users).find(u=>u.id===g.lid);
+    h += `<div class="irow"><div><div style="font-weight:700;font-size:12.5px">${g.name}</div><div style="font-size:10.5px;color:var(--text2)">${cnt} مشترك · ${leader?leader.name:'بدون معاون'}</div></div><button class="btn btn-o btn-xs" onclick="openEditGroup('${g.id}')">✏️ تعديل</button></div>`;
+  });
+  const el = document.getElementById('gList'); if (el) el.innerHTML = h;
+}
+
+// ═══════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════
+function openOv(html) { document.getElementById('mb').innerHTML=html; document.getElementById('ov').classList.add('open'); }
+function closeOv() { document.getElementById('ov').classList.remove('open'); }
+function closeOvClick(e) { if(e.target===document.getElementById('ov')) closeOv(); }
+
+// ═══════════════════════════════════════
+// ADD MEMBER
+// ═══════════════════════════════════════
+let pendingPhoto = '';
+
+function openAddM() {
+  const sess = getSess();
+  const gs = sess.role==='admin' ? arr(STATE.groups) : arr(STATE.groups).filter(g=>g.id===sess.gid);
+  openOv(`
+    <div class="mtitle">➕ إضافة مشترك جديد</div>
+    <div style="text-align:center;margin-bottom:14px">
+      <div class="phu" id="phPrev" onclick="document.getElementById('phInput').click()"><span>📷</span></div>
+      <input type="file" id="phInput" accept="image/*" style="display:none" onchange="prevPhoto(event)">
+      <div style="font-size:11px;color:var(--text2);margin-top:4px">اضغط لإضافة صورة</div>
+    </div>
+    <div class="fg"><label class="fl">الاسم الكامل *</label><input type="text" id="f_name" class="fc" placeholder="أدخل الاسم"></div>
+    <div class="fg"><label class="fl">رقم الهاتف *</label><input type="tel" id="f_phone" class="fc" placeholder="07xxxxxxxxx"></div>
+    <div class="fg"><label class="fl">Chat ID تيليغرام</label><input type="number" id="f_tgid" class="fc" placeholder="راسل @userinfobot للحصول عليه"></div>
+    <div class="fg"><label class="fl">المجموعة *</label><select id="f_gid" class="fc">${gs.map(g=>`<option value="${g.id}">${g.name}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">الاشتراك الشهري *</label><input type="number" id="f_mo" class="fc" value="${STATE.settings?.defaultMonthly||10000}"></div>
+    <div class="fg"><label class="fl">ديون سابقة</label><input type="number" id="f_od" class="fc" value="0"></div>
+    <div class="fg"><label class="fl">تاريخ الانضمام</label><input type="date" id="f_dt" class="fc" value="${td()}"></div>
+    <div class="fg"><label class="fl">ملاحظات</label><input type="text" id="f_notes" class="fc" placeholder="اختياري"></div>
+    <button class="btn btn-p" onclick="saveM()">💾 حفظ المشترك</button>
+  `);
+}
+
+function prevPhoto(e) {
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{pendingPhoto=ev.target.result;document.getElementById('phPrev').innerHTML=`<img src="${pendingPhoto}" alt="">`;};
+  reader.readAsDataURL(file);
+}
+
+async function saveM() {
+  const name=document.getElementById('f_name').value.trim();
+  const phone=document.getElementById('f_phone').value.trim();
+  const gid=document.getElementById('f_gid').value;
+  const mo=parseInt(document.getElementById('f_mo').value)||0;
+  const od=parseInt(document.getElementById('f_od').value)||0;
+  const tgid=document.getElementById('f_tgid').value.trim();
+  const dt=document.getElementById('f_dt').value;
+  const notes=document.getElementById('f_notes').value.trim();
+  if(!name||!phone||!gid||!mo){showAlert('❌ يرجى ملء الحقول المطلوبة','err');return}
+  const id='S'+uid();
+  setSyncing(true);
+  try {
+    await fbSet(`members/${id}`,{id,name,phone,tgid,photo:pendingPhoto||'',gid,status:'نشط',joined:dt,monthly:mo,oldDebt:od,notes,created:td()});
+    pendingPhoto='';closeOv();showAlert('✅ تم إضافة المشترك وحفظه في السحابة');
+    const s=STATE.settings||{};
+    if(tgid&&s.tgToken&&s.notifyWelcome){
+      const g=STATE.groups[gid];
+      sendTG(tgid,`🌹 أهلاً وسهلاً ${name}\nنرحب بك في هيئة السيدة زينب عليها السلام\nمجموعتك: ${g?g.name:''}\nاشتراكك الشهري: ${fmt(mo)}\nبارك الله فيك 🌹`,'🌹 ترحيب',name);
+    }
+  } catch(e){showAlert('❌ خطأ: '+e.message,'err')}
+  setSyncing(false);
+}
+
+// ═══════════════════════════════════════
+// EDIT MEMBER
+// ═══════════════════════════════════════
+function openEditM(mid) {
+  const m=STATE.members[mid]; const sess=getSess();
+  openOv(`
+    <div class="mtitle">✏️ تعديل — ${m.name}</div>
+    <div style="text-align:center;margin-bottom:14px">
+      <div class="phu" id="phPrev2" onclick="document.getElementById('phInput2').click()">
+        ${m.photo?`<img src="${m.photo}" alt="">`:'<span>📷</span>'}
+      </div>
+      <input type="file" id="phInput2" accept="image/*" style="display:none" onchange="prevPhoto2(event)">
+      <div style="font-size:11px;color:var(--text2);margin-top:4px">اضغط لتغيير الصورة</div>
+    </div>
+    <div class="fg"><label class="fl">الاسم</label><input type="text" id="e_name" class="fc" value="${m.name}"></div>
+    <div class="fg"><label class="fl">الهاتف</label><input type="tel" id="e_phone" class="fc" value="${m.phone}"></div>
+    <div class="fg"><label class="fl">Chat ID تيليغرام</label><input type="text" id="e_tgid" class="fc" value="${m.tgid||''}"></div>
+    <div class="fg"><label class="fl">الاشتراك الشهري</label><input type="number" id="e_mo" class="fc" value="${m.monthly}"></div>
+    ${sess.role==='admin'?`
+    <div class="fg"><label class="fl">المجموعة</label><select id="e_gid" class="fc">${arr(STATE.groups).map(g=>`<option value="${g.id}" ${g.id===m.gid?'selected':''}>${g.name}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">ديون سابقة</label><input type="number" id="e_od" class="fc" value="${m.oldDebt||0}"></div>`:''}
+    <div class="fg"><label class="fl">الحالة</label><select id="e_st" class="fc">
+      <option ${m.status==='نشط'?'selected':''}>نشط</option>
+      <option ${m.status==='موقوف'?'selected':''}>موقوف</option>
+    </select></div>
+    <div class="fg"><label class="fl">ملاحظات</label><input type="text" id="e_notes" class="fc" value="${m.notes||''}"></div>
+    <button class="btn btn-p" onclick="updateM('${mid}')">💾 حفظ التعديلات</button>
+  `);
+}
+
+function prevPhoto2(e) {
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{pendingPhoto=ev.target.result;document.getElementById('phPrev2').innerHTML=`<img src="${pendingPhoto}" alt="">`;};
+  reader.readAsDataURL(file);
+}
+
+async function updateM(mid) {
+  const m=STATE.members[mid]; const sess=getSess();
+  const updates={
+    name:document.getElementById('e_name').value.trim(),
+    phone:document.getElementById('e_phone').value.trim(),
+    tgid:document.getElementById('e_tgid').value.trim(),
+    monthly:parseInt(document.getElementById('e_mo').value)||0,
+    status:document.getElementById('e_st').value,
+    notes:document.getElementById('e_notes').value.trim()
+  };
+  if(pendingPhoto){updates.photo=pendingPhoto;pendingPhoto='';}
+  if(sess.role==='admin'){
+    updates.gid=document.getElementById('e_gid').value;
+    updates.oldDebt=parseInt(document.getElementById('e_od').value)||0;
+  }
+  setSyncing(true);
+  try{await fbUpdate(`members/${mid}`,updates);closeOv();showAlert('✅ تم حفظ التعديلات');openDet(mid);}
+  catch(e){showAlert('❌ خطأ: '+e.message,'err')}
+  setSyncing(false);
+}
+
+// ═══════════════════════════════════════
+// ADD PAYMENT
+// ═══════════════════════════════════════
+function openAddPay(mid) {
+  const m=STATE.members[mid]; const b=calcBal(mid);
+  openOv(`
+    <div class="mtitle">💰 تسجيل دفعة — ${m.name}</div>
+    <div class="balbox ${b.bal>=0?'pos':'neg'}" style="margin-bottom:14px">
+      <div class="bamt">${fmt(b.bal)}</div>
+      <div class="blbl">الرصيد الحالي</div>
+    </div>
+    <div class="fg"><label class="fl">المبلغ *</label><input type="number" id="p_amt" class="fc" placeholder="أدخل المبلغ" autofocus></div>
+    <div class="fg"><label class="fl">طريقة الدفع</label><select id="p_mth" class="fc"><option>نقداً</option><option>تحويل</option><option>تطبيق</option></select></div>
+    <div class="fg"><label class="fl">تاريخ الدفعة</label><input type="date" id="p_dt" class="fc" value="${td()}"></div>
+    <div class="fg"><label class="fl">ملاحظة</label><input type="text" id="p_note" class="fc" placeholder="اختياري"></div>
+    <button class="btn btn-s" onclick="savePay('${mid}')">💾 تسجيل الدفعة</button>
+  `);
+}
+
+async function savePay(mid) {
+  const amt=parseInt(document.getElementById('p_amt').value)||0;
+  const mth=document.getElementById('p_mth').value;
+  const dt=document.getElementById('p_dt').value;
+  const note=document.getElementById('p_note').value.trim();
+  if(amt<=0){showAlert('❌ يرجى إدخال مبلغ صحيح','err');return}
+  const m=STATE.members[mid]; const sess=getSess();
+  const id='P'+uid();
+  const payData={id,mid,gid:m.gid,date:dt,amount:amt,method:mth,note,by:sess.id,status:'مؤكد',created:new Date().toISOString()};
+  setSyncing(true);
+  try{
+    await fbSet(`payments/${id}`,payData);
+    closeOv();showAlert('✅ تم تسجيل الدفعة وحفظها في السحابة');
+    const newBal=calcBal(mid);
+    const months=m.monthly>0?Math.floor(amt/m.monthly):0;
+    const s=STATE.settings||{};
+    if(m.tgid&&s.tgToken&&s.notifyPayment){
+      sendTG(m.tgid,`✅ تم استلام دفعتك\n━━━━━━━━━━━━\nالاسم: ${m.name}\nالمبلغ: ${fmt(amt)}\nالأشهر: ${months} شهر\nالتاريخ: ${dt}\nرصيدك: ${fmt(newBal.bal)}\n━━━━━━━━━━━━\n🌹 هيئة السيدة زينب عليها السلام`,'💰 دفعة',m.name);
+    }
+    openDet(mid);
+  }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
+  setSyncing(false);
+}
+
+// ═══════════════════════════════════════
+// ADD DEBT
+// ═══════════════════════════════════════
+function openAddDebt(mid) {
+  const m=STATE.members[mid]; const now=new Date();
+  const mNames=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  openOv(`
+    <div class="mtitle">➕ إضافة دين — ${m.name}</div>
+    <div class="fg"><label class="fl">المبلغ *</label><input type="number" id="d_amt" class="fc" value="${m.monthly}"></div>
+    <div style="display:flex;gap:8px">
+      <div class="fg" style="flex:1"><label class="fl">السنة</label><input type="number" id="d_yr" class="fc" value="${now.getFullYear()}"></div>
+      <div class="fg" style="flex:1"><label class="fl">الشهر</label><input type="number" id="d_mo" class="fc" value="${now.getMonth()+1}" min="1" max="12"></div>
+    </div>
+    <div class="fg"><label class="fl">نوع الدين</label><select id="d_st" class="fc"><option value="مستحق">مستحق — شهري</option><option value="دين_سابق">دين سابق</option></select></div>
+    <div class="fg"><label class="fl">السبب</label><input type="text" id="d_rsn" class="fc" value="استحقاق ${mNames[now.getMonth()]} ${now.getFullYear()}"></div>
+    <button class="btn btn-p" onclick="saveDebt('${mid}')">💾 إضافة الدين</button>
+  `);
+}
+
+async function saveDebt(mid) {
+  const amt=parseInt(document.getElementById('d_amt').value)||0;
+  const yr=parseInt(document.getElementById('d_yr').value);
+  const mo=parseInt(document.getElementById('d_mo').value);
+  const st=document.getElementById('d_st').value;
+  const rsn=document.getElementById('d_rsn').value.trim();
+  if(!amt){showAlert('❌ يرجى إدخال مبلغ','err');return}
+  const m=STATE.members[mid]; const sess=getSess();
+  const id='D'+uid();
+  setSyncing(true);
+  try{
+    await fbSet(`debts/${id}`,{id,mid,gid:m.gid,year:yr,month:mo,amount:amt,status:st,reason:rsn,created:td(),by:sess.id});
+    closeOv();showAlert('✅ تم إضافة الدين في السحابة');
+    const s=STATE.settings||{};
+    if(m.tgid&&s.tgToken&&s.notifyDebt){
+      const mNames=['','يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+      sendTG(m.tgid,`🔔 إشعار دين\nعزيزي ${m.name}\nمبلغ: ${fmt(amt)}\nالشهر: ${mNames[mo]} ${yr}\n🌹 هيئة السيدة زينب عليها السلام`,'💳 دين',m.name);
+    }
+    openDet(mid);
+  }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
+  setSyncing(false);
+}
+
+// ═══════════════════════════════════════
+// EDIT DEBT STATUS
+// ═══════════════════════════════════════
+function editDebtSt(did, mid) {
+  const d=STATE.debts[did]; if(!d)return;
+  openOv(`
+    <div class="mtitle">✏️ تعديل حالة الدين</div>
+    <div style="margin-bottom:12px;padding:10px;background:var(--gray);border-radius:var(--r2)">
+      <div style="font-size:12.5px;font-weight:700">${d.reason}</div>
+      <div style="font-size:12px;color:var(--text2)">المبلغ: ${fmt(d.amount)}</div>
+    </div>
+    <div class="fg"><label class="fl">الحالة الجديدة</label>
+    <select id="ds_st" class="fc">
+      <option value="مستحق" ${d.status==='مستحق'?'selected':''}>🔴 مستحق</option>
+      <option value="مدفوع_جزئي" ${d.status==='مدفوع_جزئي'?'selected':''}>⚠️ مدفوع جزئي</option>
+      <option value="مدفوع_كلي" ${d.status==='مدفوع_كلي'?'selected':''}>✅ مدفوع كلي</option>
+      <option value="ملغي" ${d.status==='ملغي'?'selected':''}>❌ ملغي</option>
+    </select></div>
+    <button class="btn btn-p" onclick="updateDebtSt('${did}','${mid}')">💾 حفظ</button>
+  `);
+}
+
+async function updateDebtSt(did, mid) {
+  const st=document.getElementById('ds_st').value;
+  setSyncing(true);
+  try{await fbUpdate(`debts/${did}`,{status:st});closeOv();showAlert('✅ تم تحديث الحالة');openDet(mid);}
+  catch(e){showAlert('❌ خطأ','err')}
+  setSyncing(false);
+}
+
+// ═══════════════════════════════════════
+// TRANSFER & STATUS
+// ═══════════════════════════════════════
+function openTransfer(mid) {
+  const m=STATE.members[mid];
+  const opts=arr(STATE.groups).filter(g=>g.id!==m.gid).map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+  openOv(`
+    <div class="mtitle">🔄 نقل — ${m.name}</div>
+    <div class="fg"><label class="fl">المجموعة الجديدة</label><select id="tr_g" class="fc">${opts}</select></div>
+    <button class="btn btn-p" onclick="doTransfer('${mid}')">🔄 نقل</button>
+  `);
+}
+
+async function doTransfer(mid) {
+  const ngid=document.getElementById('tr_g').value;
+  setSyncing(true);
+  try{await fbUpdate(`members/${mid}`,{gid:ngid});closeOv();showAlert('✅ تم نقل المشترك');openDet(mid);}
+  catch(e){showAlert('❌ خطأ','err')}
+  setSyncing(false);
+}
+
+async function toggleSt(mid, st) {
+  setSyncing(true);
+  try{await fbUpdate(`members/${mid}`,{status:st});showAlert(st==='نشط'?'✅ تم تفعيل المشترك':'⏸️ تم تجميد المشترك');openDet(mid);}
+  catch(e){showAlert('❌ خطأ','err')}
+  setSyncing(false);
+}
+
+// ═══════════════════════════════════════
+// MONTHLY DEBTS
+// ═══════════════════════════════════════
+async function addMonthlyDebts() {
+  if(!confirm('إضافة ديون الشهر الحالي لجميع المشتركين النشطين؟'))return;
+  const now=new Date(); const yr=now.getFullYear(); const mo=now.getMonth()+1;
+  const mNames=['','يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  let added=0;
+  const updates={};
+  arr(STATE.members).filter(m=>m.status==='نشط').forEach(m=>{
+    const exists=arr(STATE.debts).find(d=>d.mid===m.id&&d.year===yr&&d.month===mo);
+    if(!exists){
+      const id='D'+uid();
+      updates[`debts/${id}`]={id,mid:m.id,gid:m.gid,year:yr,month:mo,amount:m.monthly,status:'مستحق',reason:`استحقاق ${mNames[mo]} ${yr}`,created:td(),by:'system'};
+      added++;
+    }
+  });
+  if(!added){showAlert('ℹ️ تم إضافة الديون مسبقاً لهذا الشهر','inf');return}
+  setSyncing(true);
+  try{await db.ref().update(updates);showAlert(`✅ تم إضافة ${added} دين للشهر الحالي`);}
+  catch(e){showAlert('❌ خطأ: '+e.message,'err')}
+  setSyncing(false);
+}
+
+// ═══════════════════════════════════════
+// ADD USER
+// ═══════════════════════════════════════
+function openAddUser() {
+  openOv(`
+    <div class="mtitle">👤 إضافة مستخدم جديد</div>
+    <div class="fg"><label class="fl">الاسم الكامل *</label><input type="text" id="u_name" class="fc"></div>
+    <div class="fg"><label class="fl">اسم الدخول *</label><input type="text" id="u_uname" class="fc"></div>
+    <div class="fg"><label class="fl">كلمة المرور *</label><input type="text" id="u_pass" class="fc"></div>
+    <div class="fg"><label class="fl">الدور</label><select id="u_role" class="fc"><option value="leader">leader — معاون</option><option value="admin">admin — مدير</option></select></div>
+    <div class="fg"><label class="fl">المجموعة</label><select id="u_gid" class="fc"><option value="">بدون مجموعة</option>${arr(STATE.groups).map(g=>`<option value="${g.id}">${g.name}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">الإيميل</label><input type="email" id="u_email" class="fc"></div>
+    <div class="fg"><label class="fl">الهاتف</label><input type="tel" id="u_phone" class="fc"></div>
+    <button class="btn btn-p" onclick="saveUser()">💾 إضافة</button>
+  `);
+}
+
+async function saveUser() {
+  const name=document.getElementById('u_name').value.trim();
+  const uname=document.getElementById('u_uname').value.trim();
+  const pass=document.getElementById('u_pass').value.trim();
+  const role=document.getElementById('u_role').value;
+  const gid=document.getElementById('u_gid').value;
+  const email=document.getElementById('u_email').value.trim();
+  const phone=document.getElementById('u_phone').value.trim();
+  if(!name||!uname||!pass){showAlert('❌ يرجى ملء الحقول المطلوبة','err');return}
+  if(arr(STATE.users).find(u=>u.uname===uname)){showAlert('❌ اسم الدخول مستخدم','err');return}
+  const id='U'+uid();
+  setSyncing(true);
+  try{
+    await fbSet(`users/${id}`,{id,uname,pass,name,role,gid,email,phone,active:true,created:td()});
+    if(gid) await fbUpdate(`groups/${gid}`,{lid:id});
+    closeOv();showAlert('✅ تم إضافة المستخدم');
+  }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
+  setSyncing(false);
+}
+
+async function delUser(uid_) {
+  if(!confirm('هل أنت متأكد من حذف هذا المستخدم؟'))return;
+  setSyncing(true);
+  try{await fbRemove(`users/${uid_}`);showAlert('✅ تم حذف المستخدم');}
+  catch(e){showAlert('❌ خطأ','err')}
+  setSyncing(false);
+}
+
+// ═══════════════════════════════════════
+// ADD / EDIT GROUP
+// ═══════════════════════════════════════
+function openAddGroup() {
+  openOv(`
+    <div class="mtitle">🏘️ إضافة مجموعة جديدة</div>
+    <div class="fg"><label class="fl">اسم المجموعة *</label><input type="text" id="g_name" class="fc" placeholder="مثال: مجموعة الكوفة"></div>
+    <div class="fg"><label class="fl">المعاون المسؤول</label><select id="g_lid" class="fc"><option value="">بدون معاون</option>${arr(STATE.users).filter(u=>u.role==='leader').map(u=>`<option value="${u.id}">${u.name}</option>`).join('')}</select></div>
+    <button class="btn btn-p" onclick="saveGroup()">💾 إضافة</button>
+  `);
+}
+
+async function saveGroup() {
+  const name=document.getElementById('g_name').value.trim();
+  const lid=document.getElementById('g_lid').value;
+  if(!name){showAlert('❌ يرجى إدخال اسم','err');return}
+  const id='G'+uid();
+  setSyncing(true);
+  try{
+    await fbSet(`groups/${id}`,{id,name,lid,active:true,created:td()});
+    if(lid) await fbUpdate(`users/${lid}`,{gid:id});
+    closeOv();showAlert('✅ تم إضافة المجموعة');
+  }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
+  setSyncing(false);
+}
+
+function openEditGroup(gid) {
+  const g=STATE.groups[gid];
+  openOv(`
+    <div class="mtitle">✏️ تعديل — ${g.name}</div>
+    <div class="fg"><label class="fl">اسم المجموعة</label><input type="text" id="eg_name" class="fc" value="${g.name}"></div>
+    <div class="fg"><label class="fl">المعاون المسؤول</label><select id="eg_lid" class="fc">
+      <option value="">بدون معاون</option>
+      ${arr(STATE.users).filter(u=>u.role==='leader').map(u=>`<option value="${u.id}" ${u.id===g.lid?'selected':''}>${u.name}</option>`).join('')}
+    </select></div>
+    <button class="btn btn-p" onclick="updateGroup('${gid}')">💾 حفظ</button>
+  `);
+}
+
+async function updateGroup(gid) {
+  const name=document.getElementById('eg_name').value.trim();
+  const lid=document.getElementById('eg_lid').value;
+  setSyncing(true);
+  try{
+    await fbUpdate(`groups/${gid}`,{name,lid});
+    if(lid) await fbUpdate(`users/${lid}`,{gid});
+    closeOv();showAlert('✅ تم تعديل المجموعة');
+  }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
+  setSyncing(false);
+}
+
+// ═══════════════════════════════════════
+// CHANGE PASSWORD
+// ═══════════════════════════════════════
+function openChangePass() {
+  openOv(`
+    <div class="mtitle">🔑 تغيير كلمة المرور</div>
+    <div class="fg"><label class="fl">كلمة المرور الحالية</label><input type="password" id="cp_old" class="fc"></div>
+    <div class="fg"><label class="fl">كلمة المرور الجديدة</label><input type="password" id="cp_new" class="fc"></div>
+    <div class="fg"><label class="fl">تأكيد كلمة المرور</label><input type="password" id="cp_con" class="fc"></div>
+    <button class="btn btn-p" onclick="changePass()">💾 تغيير</button>
+  `);
+}
+
+async function changePass() {
+  const sess=getSess();
+  const old=document.getElementById('cp_old').value;
+  const nw=document.getElementById('cp_new').value;
+  const con=document.getElementById('cp_con').value;
+  const user=arr(STATE.users).find(u=>u.id===sess.id);
+  if(user.pass!==old){showAlert('❌ كلمة المرور الحالية غلط','err');return}
+  if(nw!==con){showAlert('❌ كلمات المرور غير متطابقة','err');return}
+  if(nw.length<4){showAlert('❌ كلمة المرور قصيرة جداً','err');return}
+  setSyncing(true);
+  try{await fbUpdate(`users/${sess.id}`,{pass:nw});setSess({...sess,pass:nw});closeOv();showAlert('✅ تم تغيير كلمة المرور');}
+  catch(e){showAlert('❌ خطأ','err')}
+  setSyncing(false);
+}
+
+// ═══════════════════════════════════════
+// SETTINGS SAVE
+// ═══════════════════════════════════════
+async function saveTG() {
+  const tok=document.getElementById('s_tok').value.trim();
+  const chat=document.getElementById('s_chat').value.trim();
+  setSyncing(true);
+  try{await fbUpdate('settings',{tgToken:tok,tgAdminChat:chat});showAlert('✅ تم حفظ إعدادات Telegram');}
+  catch(e){showAlert('❌ خطأ','err')}
+  setSyncing(false);
+}
+
+async function togSet(key, btnId) {
+  const cur=STATE.settings?.[key]; const nw=!cur;
+  const btn=document.getElementById(btnId);
+  if(btn)btn.className='tog '+(nw?'on':'');
+  try{await fbUpdate('settings',{[key]:nw});}catch(e){}
+}
+
+async function saveGen() {
+  const def=parseInt(document.getElementById('s_def').value)||10000;
+  setSyncing(true);
+  try{await fbUpdate('settings',{defaultMonthly:def});showAlert('✅ تم الحفظ');}
+  catch(e){showAlert('❌ خطأ','err')}
+  setSyncing(false);
+}
+
+// ═══════════════════════════════════════
+// TELEGRAM
+// ═══════════════════════════════════════
+async function sendTG(chatId, text, icon, name) {
+  const s=STATE.settings||{}; if(!s.tgToken||!chatId)return;
+  try{
+    const r=await fetch(`https://api.telegram.org/bot${s.tgToken}/sendMessage`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:chatId,text,parse_mode:'HTML'})
+    });
+    const data=await r.json();
+    if(!data.ok) throw new Error(data.description);
+    // Log notification
+    const nid='N'+uid();
+    await fbSet(`notifications/${nid}`,{id:nid,icon:icon||'📨',msg:`تم إرسال إشعار لـ ${name||chatId}`,time:new Date().toLocaleString('ar'),ts:Date.now()});
+  }catch(e){console.log('TG error:',e.message)}
+}
+
+function sendMemberReport(mid) {
+  const m=STATE.members[mid]; const s=STATE.settings||{};
+  if(!m.tgid){showAlert('❌ لا يوجد Chat ID لهذا المشترك','err');return}
+  if(!s.tgToken){showAlert('❌ لم يتم إعداد Telegram Token','err');return}
+  const b=calcBal(mid); const g=STATE.groups[m.gid];
+  const due=arr(STATE.debts).filter(d=>d.mid===mid&&d.status==='مستحق').reduce((s,d)=>s+d.amount,0);
+  sendTG(m.tgid,`📊 تقريرك الشهري\nالاسم: ${m.name}\nالمجموعة: ${g?g.name:''}\n━━━━━━━━━━━━\n💰 المدفوع: ${fmt(b.paid)}\n📋 الديون: ${fmt(b.debts)}\n⚖️ رصيدك: ${fmt(b.bal)}\n🗓️ أشهر مدفوعة: ${b.months}\n${due>0?`⚠️ مستحق: ${fmt(due)}`:'✅ لا ديون مستحقة'}\n━━━━━━━━━━━━\n🌹 هيئة السيدة زينب عليها السلام`,'📊 تقرير',m.name);
+  showAlert('✅ تم إرسال التقرير');
+}
+
+function sendMonthlyReports() {
+  const s=STATE.settings||{};
+  if(!s.tgToken){showAlert('❌ لم يتم إعداد Telegram Token','err');return}
+  let sent=0;
+  arr(STATE.members).filter(m=>m.status==='نشط'&&m.tgid).forEach(m=>{
+    const b=calcBal(m.id); const g=STATE.groups[m.gid];
+    const due=arr(STATE.debts).filter(d=>d.mid===m.id&&d.status==='مستحق').reduce((sv,d)=>sv+d.amount,0);
+    sendTG(m.tgid,`📊 التقرير الشهري\n${m.name} — ${g?g.name:''}\n━━━━━━━━━━━━\n💰 المدفوع: ${fmt(b.paid)}\n📋 الديون: ${fmt(b.debts)}\n⚖️ الرصيد: ${fmt(b.bal)}\n${due>0?`⚠️ مستحق: ${fmt(due)}`:'✅ لا ديون مستحقة'}\n🌹 هيئة السيدة زينب عليها السلام`,'📊 تقرير شهري',m.name);
+    sent++;
+  });
+  showAlert(`✅ تم إرسال التقارير لـ ${sent} مشترك`);
+}
+
+function sendBulk() {
+  const s=STATE.settings||{}; const gid=document.getElementById('bulk_g').value;
+  const msg=document.getElementById('bulk_msg').value.trim();
+  if(!msg){showAlert('❌ يرجى كتابة الرسالة','err');return}
+  if(!s.tgToken){showAlert('❌ لم يتم إعداد Telegram Token','err');return}
+  let ms=arr(STATE.members).filter(m=>m.tgid&&m.status==='نشط');
+  if(gid!=='all')ms=ms.filter(m=>m.gid===gid);
+  ms.forEach(m=>sendTG(m.tgid,`📢 رسالة من هيئة السيدة زينب عليها السلام\n\n${msg}\n\n🌹 هيئة السيدة زينب عليها السلام`,'📢 جماعية',m.name));
+  showAlert(`✅ تم الإرسال لـ ${ms.length} مشترك`);
+  document.getElementById('bulk_msg').value='';
+}
+
+// ═══════════════════════════════════════
+// FAB
+// ═══════════════════════════════════════
+function openFab() {
+  if(CP==='members')openAddM();
+  else if(CP==='debts'||CP==='payments'){
+    const ms=visMembers();
+    const opts=ms.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
+    if(CP==='debts') openOv(`<div class="mtitle">💳 إضافة دين</div><div class="fg"><label class="fl">المشترك</label><select id="fab_m" class="fc">${opts}</select></div><button class="btn btn-p" onclick="const v=document.getElementById('fab_m').value;closeOv();setTimeout(()=>openAddDebt(v),100)">التالي →</button>`);
+    else openOv(`<div class="mtitle">💰 تسجيل دفعة</div><div class="fg"><label class="fl">المشترك</label><select id="fab_m2" class="fc">${opts}</select></div><button class="btn btn-s" onclick="const v=document.getElementById('fab_m2').value;closeOv();setTimeout(()=>openAddPay(v),100)">التالي →</button>`);
+  }
+}
+
+// ═══════════════════════════════════════
+// BACKUP
+// ═══════════════════════════════════════
+function exportBak() {
+  const data=JSON.stringify(STATE,null,2);
+  try{
+    const blob=new Blob([data],{type:'application/json'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download=`zainab_backup_${td()}.json`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),1000);
+    showAlert('✅ تم التصدير — تحقق من مجلد التنزيلات');
+  }catch(e){
+    // iOS fallback
+    const w=window.open('','_blank');
+    if(w){w.document.write('<pre style="direction:ltr;font-size:10px;word-wrap:break-word">'+data+'</pre>');showAlert('✅ افتح القائمة واضغط حفظ الصفحة');}
+    else{navigator.clipboard?.writeText(data).then(()=>showAlert('✅ تم النسخ — الصقها في ملف نصي'));}
+  }
+}
+
+// ═══════════════════════════════════════
+// MAIN INIT
+// ═══════════════════════════════════════
+window.onload = async function() {
+  // Start loading bar
+  setLdStatus('جاري الاتصال بـ Firebase...', 20);
+  setTimeout(()=>setLdStatus('جاري تحميل البيانات...', 50), 800);
+
+  try {
+    // Check connection
+    await db.ref('.info/connected').once('value');
+    setLdStatus('جاري تهيئة البيانات...', 70);
+
+    // Init default data if first time
+    await initDefaultData();
+    setLdStatus('جاري تفعيل المزامنة الفورية...', 85);
+
+    // Set up real-time listeners — any change in Firebase updates STATE and re-renders
+    const paths = ['users','groups','members','debts','payments','notifications','settings'];
+    paths.forEach(path => {
+      db.ref(path).on('value', snap => {
+        const val = snap.val();
+        if (path === 'settings') STATE.settings = val || STATE.settings;
+        else STATE[path] = val || {};
+        if (getSess()) renderAll();
+      });
+    });
+
+    setLdStatus('✅ متصل بقاعدة البيانات!', 100);
+    setTimeout(() => {
+      document.getElementById('loading').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('loading').style.display = 'none';
+        // Check for saved session
+        const saved = sessionStorage.getItem('z_sess');
+        if (saved) {
+          SESSION = JSON.parse(saved);
+          bootApp();
+        } else {
+          document.getElementById('loginPage').style.display = 'flex';
+        }
+      }, 500);
+    }, 800);
+
+  } catch(e) {
+    setLdStatus('❌ خطأ في الاتصال: '+e.message, 100);
+    document.getElementById('ldFill').style.background = 'var(--red2)';
+    setTimeout(() => {
+      document.getElementById('loading').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('loginPage').style.display = 'flex';
+        showAlert('⚠️ تعذر الاتصال بالسحابة — تحقق من الإنترنت', 'err');
+      }, 500);
+    }, 2000);
+  }
+};
+</script>
+</body>
+</html>
