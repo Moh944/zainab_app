@@ -244,50 +244,42 @@ select.fc{cursor:pointer}
 
   <div class="main">
 
-    <!-- ══ HOME (admin) ══ -->
     <div class="page active" id="page-home">
       <div class="stitle"><span>📊</span>لوحة التحكم</div>
       <div class="stats-grid" id="homeStats"></div>
       <div id="homeContent"></div>
     </div>
 
-    <!-- ══ MEMBERS ══ -->
     <div class="page" id="page-members">
       <div class="stitle"><span>👥</span>الأعضاء</div>
       <div class="sbar"><span style="color:var(--text2)">🔍</span><input type="text" placeholder="بحث بالاسم أو الهاتف..." id="msearch" oninput="filterMembers()"></div>
       <div id="membersList"></div>
     </div>
 
-    <!-- ══ MEMBER DETAIL ══ -->
     <div class="page" id="page-detail">
       <button class="back-btn" onclick="goBack()">← رجوع</button>
       <div id="detailContent"></div>
     </div>
 
-    <!-- ══ JUMAA ══ -->
     <div class="page" id="page-jumaa">
       <div class="stitle"><span>🕌</span>الجمعة</div>
       <div id="jumaaContent"></div>
     </div>
 
-    <!-- ══ VISITS ══ -->
     <div class="page" id="page-visits">
       <div class="stitle"><span>🌿</span>الزيارات والمناسبات</div>
       <div id="visitsContent"></div>
     </div>
 
-    <!-- ══ FINANCE ══ -->
     <div class="page" id="page-finance">
       <div class="stitle"><span>💰</span>الاشتراكات المالية</div>
       <div id="financeContent"></div>
     </div>
 
-    <!-- ══ MEMBER PROFILE (self view) ══ -->
     <div class="page" id="page-profile">
       <div id="profileContent"></div>
     </div>
 
-    <!-- ══ SETTINGS ══ -->
     <div class="page" id="page-settings">
       <div class="stitle"><span>⚙️</span>الإعدادات</div>
       <div id="settingsContent"></div>
@@ -445,6 +437,7 @@ function nav(page,btn){
   document.getElementById('page-'+page).classList.add('active');
   if(btn)btn.classList.add('active');
   CP=page;
+  refreshCurrentPage(); // تم إضافة هذا السطر لحل مشكلة عدم التحديث المباشر
 }
 
 function goBack(){nav(prevPage,document.querySelector(`.bni[onclick*="${prevPage}"]`))}
@@ -476,19 +469,22 @@ function avatarColor(id){
   return c[Math.abs(h)%c.length];
 }
 
-// Calculate member subscription months
+// Calculate member subscription months (المعدلة لدعم السعر المخصص)
 function calcMonths(mid){
-  const m=S.members[mid];if(!m)return{paid:0,months:0,paidMonths:[]};
-  const fee=S.settings?.monthlyFee||10000;
+  const m=S.members[mid];if(!m)return{paid:0,months:0,paidMonths:[],fee:0};
+  const fee = m.fee ? parseInt(m.fee) : (S.settings?.monthlyFee||10000);
   const paid=arr(S.payments).filter(p=>p.mid===mid).reduce((s,p)=>s+p.amount,0);
   const months=fee>0?Math.floor(paid/fee):0;
   return{paid,months,fee};
 }
 
-// Count member attendance
+// Count member attendance (المعدلة لحساب أيام الزيارات بدقة)
 function calcAttendance(mid){
   const jumaaDays=arr(S.jumaa).filter(j=>j.attendees&&j.attendees[mid]).length;
-  const visitDays=arr(S.visits).filter(v=>v.attendees&&v.attendees[mid]).reduce((s,v)=>s+(v.days||1),0);
+  const visitDays=arr(S.visits).filter(v=>v.attendees&&v.attendees[mid]).reduce((s,v)=>{
+    const d = v.attendees[mid];
+    return s + (typeof d === 'number' ? d : (v.days||1));
+  },0);
   return{jumaaDays,visitDays,total:jumaaDays+visitDays};
 }
 
@@ -549,7 +545,7 @@ function filterMembers(){
 
 function renderMList(ms){
   if(!ms.length){document.getElementById('membersList').innerHTML=`<div class="empty"><div class="ei">👤</div><div class="et">لا يوجد أعضاء</div></div>`;return}
-  const fee=S.settings?.monthlyFee||10000;
+  const defaultFee=S.settings?.monthlyFee||10000;
   let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:12px;color:var(--text2)">${ms.length} عضو</span><button class="btn btn-p btn-sm" onclick="openAddMember()">+ إضافة عضو</button></div>`;
   ms.forEach(m=>{
     const {paid,months}=calcMonths(m.id);
@@ -608,10 +604,12 @@ function openMemberDetail(mid){
   let vHtml=myVisits.length?'':
     `<div class="empty"><div class="ei">🌿</div><div class="et">لم يسجل حضور زيارة بعد</div></div>`;
   myVisits.forEach(v=>{
+    // جلب عدد الأيام الفعلية التي خدمها
+    const servedDays = typeof v.attendees[mid] === 'number' ? v.attendees[mid] : (v.days||1);
     vHtml+=`<div class="visit-card">
       <div class="visit-title">${v.name}</div>
       <div class="visit-date">📅 ${v.date}</div>
-      <div class="visit-days">⏱️ ${v.days||1} يوم خدمة</div>
+      <div class="visit-days">⏱️ ${servedDays} يوم خدمة</div>
     </div>`;
   });
 
@@ -671,7 +669,7 @@ function openMemberDetail(mid){
 }
 
 // ═══════════════════════════════════════
-// ADD/EDIT MEMBER
+// ADD/EDIT MEMBER (المعدلة لدعم السعر المخصص)
 // ═══════════════════════════════════════
 function openAddMember(){
   openOv(`
@@ -679,6 +677,7 @@ function openAddMember(){
     <div class="fg"><label class="fl">الاسم الكامل *</label><input type="text" id="f_name" class="fc" placeholder="اسم العضو"></div>
     <div class="fg"><label class="fl">رقم الهاتف *</label><input type="tel" id="f_phone" class="fc" placeholder="07xxxxxxxxx"></div>
     <div class="fg"><label class="fl">كلمة مرور العضو *</label><input type="text" id="f_pass" class="fc" placeholder="كلمة المرور للدخول لصفحته"></div>
+    <div class="fg"><label class="fl">الاشتراك الشهري المخصص</label><input type="number" id="f_fee" class="fc" placeholder="اتركه فارغاً للسعر الافتراضي"></div>
     <div class="fg"><label class="fl">تاريخ الانضمام</label><input type="date" id="f_join" class="fc" value="${td()}"></div>
     <div class="fg"><label class="fl">ملاحظات</label><input type="text" id="f_notes" class="fc" placeholder="اختياري"></div>
     <button class="btn btn-p" onclick="saveMember()">💾 إضافة العضو</button>
@@ -689,14 +688,16 @@ async function saveMember(){
   const name=document.getElementById('f_name').value.trim();
   const phone=document.getElementById('f_phone').value.trim();
   const pass=document.getElementById('f_pass').value.trim();
+  const fee=parseInt(document.getElementById('f_fee').value)||0; 
   const join=document.getElementById('f_join').value;
   const notes=document.getElementById('f_notes').value.trim();
   if(!name||!phone||!pass){showAlert('❌ يرجى ملء الحقول المطلوبة','err');return}
   if(arr(S.members).find(m=>m.phone===phone)){showAlert('❌ رقم الهاتف مستخدم مسبقاً','err');return}
   const id='M'+uid();
   try{
-    await fset(`members/${id}`,{id,name,phone,pass,joined:join,notes,active:true,created:td()});
+    await fset(`members/${id}`,{id,name,phone,pass,fee,joined:join,notes,active:true,created:td()});
     closeOv();showAlert('✅ تم إضافة العضو');
+    refreshCurrentPage();
   }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
 }
 
@@ -707,6 +708,7 @@ function openEditMember(mid){
     <div class="fg"><label class="fl">الاسم الكامل</label><input type="text" id="e_name" class="fc" value="${m.name}"></div>
     <div class="fg"><label class="fl">رقم الهاتف</label><input type="tel" id="e_phone" class="fc" value="${m.phone}"></div>
     <div class="fg"><label class="fl">كلمة مرور العضو</label><input type="text" id="e_pass" class="fc" value="${m.pass||''}"></div>
+    <div class="fg"><label class="fl">الاشتراك الشهري المخصص</label><input type="number" id="e_fee" class="fc" value="${m.fee||''}" placeholder="السعر الافتراضي"></div>
     <div class="fg"><label class="fl">ملاحظات</label><input type="text" id="e_notes" class="fc" value="${m.notes||''}"></div>
     <button class="btn btn-p" onclick="updateMember('${mid}')">💾 حفظ التعديلات</button>
   `);
@@ -717,6 +719,7 @@ async function updateMember(mid){
     name:document.getElementById('e_name').value.trim(),
     phone:document.getElementById('e_phone').value.trim(),
     pass:document.getElementById('e_pass').value.trim(),
+    fee:parseInt(document.getElementById('e_fee').value)||0,
     notes:document.getElementById('e_notes').value.trim()
   };
   try{await fupd(`members/${mid}`,updates);closeOv();showAlert('✅ تم حفظ التعديلات');openMemberDetail(mid);}
@@ -777,8 +780,8 @@ async function savePayment(mid){
   const sess=getSess();
   try{
     await fset(`payments/${id}`,{id,mid,amount:amt,date,note,by:sess.id,created:td()});
-    const {months}=calcMonths(mid);
-    closeOv();showAlert(`✅ تم تسجيل الدفعة — أصبح لديه ${months+Math.floor(amt/(S.settings?.monthlyFee||10000))} شهر`);
+    const {months,fee}=calcMonths(mid);
+    closeOv();showAlert(`✅ تم تسجيل الدفعة — أصبح لديه ${months+Math.floor(amt/(fee||10000))} شهر`);
     openMemberDetail(mid);
   }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
 }
@@ -915,7 +918,7 @@ async function deleteJumaa(jid){
 }
 
 // ═══════════════════════════════════════
-// VISITS
+// VISITS (المعدلة لدعم تحديد الأيام)
 // ═══════════════════════════════════════
 function renderVisits(){
   const visits=arr(S.visits).sort((a,z)=>z.date.localeCompare(a.date));
@@ -990,8 +993,13 @@ function openVisitDetail(vid){
 
   activeMembers.forEach(m=>{
     const isChecked=v.attendees&&v.attendees[m.id];
+    const servedDays = isChecked ? (typeof v.attendees[m.id] === 'number' ? v.attendees[m.id] : (v.days||1)) : 0;
+    
     h+=`<div class="att-member ${isChecked?'checked':''}" id="vam_${m.id}">
-      <div><div class="am-name">${m.name}</div><div class="am-sub">${m.phone}</div></div>
+      <div>
+        <div class="am-name">${m.name}</div>
+        <div class="am-sub" style="${isChecked?'color:var(--green2);font-weight:bold;':''}">${m.phone} ${isChecked ? `(خدم ${servedDays} يوم)` : ''}</div>
+      </div>
       <div class="chk ${isChecked?'on':''}" id="vchk_${m.id}" onclick="toggleVisitAtt('${vid}','${m.id}',this)">
         <span>✓</span>
       </div>
@@ -1014,28 +1022,27 @@ function openVisitDetail(vid){
 async function toggleVisitAtt(vid,mid,chkEl){
   const v=S.visits[vid];
   const isChecked=v.attendees&&v.attendees[mid];
-  const card=document.getElementById(`vam_${mid}`);
+  
   if(isChecked){
-    chkEl.classList.remove('on');card.classList.remove('checked');
-    try{await fdel(`visits/${vid}/attendees/${mid}`);}catch(e){}
+    try{await fdel(`visits/${vid}/attendees/${mid}`); openVisitDetail(vid);}catch(e){}
   }else{
-    chkEl.classList.add('on');card.classList.add('checked');
-    try{await fset(`visits/${vid}/attendees/${mid}`,true);}catch(e){}
+    let d = prompt(`كم عدد الأيام التي خدمها العضو؟\n(أيام المناسبة: ${v.days||1} يوم)`, v.days||1);
+    if(d===null) return; 
+    d = parseInt(d) || (v.days||1); 
+    try{await fset(`visits/${vid}/attendees/${mid}`, d); openVisitDetail(vid);}catch(e){}
   }
 }
 
 async function selectAllVisit(vid,select){
   const active=arr(S.members).filter(m=>m.active);
+  const v=S.visits[vid];
   const updates={};
-  active.forEach(m=>{updates[`visits/${vid}/attendees/${m.id}`]=select?true:null;});
+  active.forEach(m=>{
+      updates[`visits/${vid}/attendees/${m.id}`]=select ? (v.days||1) : null;
+  });
   try{
     await fdb.ref().update(updates);
-    active.forEach(m=>{
-      const chk=document.getElementById(`vchk_${m.id}`);
-      const card=document.getElementById(`vam_${m.id}`);
-      if(chk)chk.className=`chk ${select?'on':''}`;
-      if(card)card.className=`att-member ${select?'checked':''}`;
-    });
+    openVisitDetail(vid); 
   }catch(e){}
 }
 
@@ -1050,7 +1057,6 @@ async function deleteVisit(vid){
 // ═══════════════════════════════════════
 function renderFinance(){
   const members=arr(S.members).sort((a,z)=>a.name.localeCompare(z.name,'ar'));
-  const fee=S.settings?.monthlyFee||10000;
   const totalPaid=arr(S.payments).reduce((s,p)=>s+p.amount,0);
   const totalMonths=members.reduce((s,m)=>s+calcMonths(m.id).months,0);
 
@@ -1132,10 +1138,11 @@ function renderProfile(){
   const myVisits=arr(S.visits).filter(v=>v.attendees&&v.attendees[mid]).sort((a,z)=>z.date.localeCompare(a.date));
   let vHtml='';
   myVisits.forEach(v=>{
+    const servedDays = typeof v.attendees[mid] === 'number' ? v.attendees[mid] : (v.days||1);
     vHtml+=`<div class="visit-card">
       <div class="visit-title">${v.name}</div>
       <div class="visit-date">📅 ${v.date}</div>
-      <div class="visit-days">⏱️ ${v.days||1} يوم خدمة</div>
+      <div class="visit-days">⏱️ ${servedDays} يوم خدمة</div>
     </div>`;
   });
 
@@ -1181,7 +1188,7 @@ function renderSettings(){
   let h=`
     <div class="card"><div class="card-hd"><div class="card-tt">⚙️ إعدادات النظام</div></div>
       <div class="fg"><label class="fl">اسم الهيئة</label><input type="text" id="s_name" class="fc" value="${s.orgName||'هيئة السيدة زينب عليها السلام'}"></div>
-      <div class="fg"><label class="fl">الاشتراك الشهري</label><input type="number" id="s_fee" class="fc" value="${s.monthlyFee||10000}"></div>
+      <div class="fg"><label class="fl">الاشتراك الشهري (الافتراضي)</label><input type="number" id="s_fee" class="fc" value="${s.monthlyFee||10000}"></div>
       <div class="fg"><label class="fl">العملة</label><input type="text" id="s_cur" class="fc" value="${s.currency||'د.ع'}"></div>
       <button class="btn btn-p" onclick="saveSettings()">💾 حفظ الإعدادات</button>
     </div>
@@ -1352,6 +1359,15 @@ function refreshCurrentPage(){
   else if(CP==='finance')renderFinance();
   else if(CP==='settings'){renderSettings();}
   else if(CP==='profile')renderProfile();
+  else if(CP==='detail'){
+    // تحديث صفحة التفاصيل المفتوحة حالياً لتجنب إغلاقها عند التحديث
+    const detailId = document.getElementById('detailContent').innerHTML.match(/'(M[A-Z0-9]+|J[A-Z0-9]+|V[A-Z0-9]+)'/);
+    if(detailId && detailId[1]){
+        if(detailId[1].startsWith('M')) openMemberDetail(detailId[1]);
+        else if(detailId[1].startsWith('J')) openJumaaDetail(detailId[1]);
+        else if(detailId[1].startsWith('V')) openVisitDetail(detailId[1]);
+    }
+  }
 }
 
 // ═══════════════════════════════════════
