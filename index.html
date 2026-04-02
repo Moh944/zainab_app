@@ -252,7 +252,7 @@ select.fc{cursor:pointer}
 
     <div class="page" id="page-members">
       <div class="stitle"><span>👥</span>الأعضاء</div>
-      <div class="sbar"><span style="color:var(--text2)">🔍</span><input type="text" placeholder="بحث بالاسم أو الهاتف..." id="msearch" oninput="filterMembers()"></div>
+      <div class="sbar"><span style="color:var(--text2)">🔍</span><input type="text" placeholder="بحث بالاسم أو الهاتف أو المجموعة..." id="msearch" oninput="filterMembers()"></div>
       <div id="membersList"></div>
     </div>
 
@@ -437,7 +437,7 @@ function nav(page,btn){
   document.getElementById('page-'+page).classList.add('active');
   if(btn)btn.classList.add('active');
   CP=page;
-  refreshCurrentPage(); // تم إضافة هذا السطر لحل مشكلة عدم التحديث المباشر
+  refreshCurrentPage();
 }
 
 function goBack(){nav(prevPage,document.querySelector(`.bni[onclick*="${prevPage}"]`))}
@@ -469,7 +469,7 @@ function avatarColor(id){
   return c[Math.abs(h)%c.length];
 }
 
-// Calculate member subscription months (المعدلة لدعم السعر المخصص)
+// Calculate member subscription months
 function calcMonths(mid){
   const m=S.members[mid];if(!m)return{paid:0,months:0,paidMonths:[],fee:0};
   const fee = m.fee ? parseInt(m.fee) : (S.settings?.monthlyFee||10000);
@@ -478,7 +478,7 @@ function calcMonths(mid){
   return{paid,months,fee};
 }
 
-// Count member attendance (المعدلة لحساب أيام الزيارات بدقة)
+// Count member attendance
 function calcAttendance(mid){
   const jumaaDays=arr(S.jumaa).filter(j=>j.attendees&&j.attendees[mid]).length;
   const visitDays=arr(S.visits).filter(v=>v.attendees&&v.attendees[mid]).reduce((s,v)=>{
@@ -539,7 +539,7 @@ function renderMembers(){
 function filterMembers(){
   const q=document.getElementById('msearch').value.toLowerCase();
   let ms=arr(S.members);
-  if(q)ms=ms.filter(m=>m.name.includes(q)||m.phone.includes(q));
+  if(q)ms=ms.filter(m=>m.name.includes(q)||m.phone.includes(q)||(m.group&&m.group.includes(q)));
   renderMList(ms.sort((a,z)=>a.name.localeCompare(z.name,'ar')));
 }
 
@@ -556,7 +556,7 @@ function renderMList(ms){
       <div class="mav" style="background:${color}">${m.name.charAt(0)}</div>
       <div class="minfo">
         <div class="mname">${m.name}</div>
-        <div class="msub">📱 ${m.phone} · 🕌 ${att.jumaaDays} جمعة · 🌿 ${att.visitDays} يوم</div>
+        <div class="msub">📱 ${m.phone} ${m.group ? '· 👥 ' + m.group : ''} · 🕌 ${att.jumaaDays} جمعة</div>
       </div>
       <div class="mstat">
         <span class="badge ${isGood?'b-green':'b-red'}">${months} شهر</span>
@@ -604,7 +604,6 @@ function openMemberDetail(mid){
   let vHtml=myVisits.length?'':
     `<div class="empty"><div class="ei">🌿</div><div class="et">لم يسجل حضور زيارة بعد</div></div>`;
   myVisits.forEach(v=>{
-    // جلب عدد الأيام الفعلية التي خدمها
     const servedDays = typeof v.attendees[mid] === 'number' ? v.attendees[mid] : (v.days||1);
     vHtml+=`<div class="visit-card">
       <div class="visit-title">${v.name}</div>
@@ -648,6 +647,7 @@ function openMemberDetail(mid){
     <div class="card">
       <div class="card-hd"><div class="card-tt">📋 بيانات العضو</div><button class="btn btn-o btn-sm" onclick="openEditMember('${mid}')">✏️ تعديل</button></div>
       <div class="irow"><span class="ilbl">رقم الهاتف</span><span class="ival">${m.phone}</span></div>
+      <div class="irow"><span class="ilbl">المجموعة</span><span class="ival">${m.group||'—'}</span></div>
       <div class="irow"><span class="ilbl">تاريخ الانضمام</span><span class="ival">${m.joined||'—'}</span></div>
       ${m.notes?`<div class="irow"><span class="ilbl">ملاحظات</span><span class="ival">${m.notes}</span></div>`:''}
     </div>
@@ -669,7 +669,7 @@ function openMemberDetail(mid){
 }
 
 // ═══════════════════════════════════════
-// ADD/EDIT MEMBER (المعدلة لدعم السعر المخصص)
+// ADD/EDIT MEMBER
 // ═══════════════════════════════════════
 function openAddMember(){
   openOv(`
@@ -677,6 +677,7 @@ function openAddMember(){
     <div class="fg"><label class="fl">الاسم الكامل *</label><input type="text" id="f_name" class="fc" placeholder="اسم العضو"></div>
     <div class="fg"><label class="fl">رقم الهاتف *</label><input type="tel" id="f_phone" class="fc" placeholder="07xxxxxxxxx"></div>
     <div class="fg"><label class="fl">كلمة مرور العضو *</label><input type="text" id="f_pass" class="fc" placeholder="كلمة المرور للدخول لصفحته"></div>
+    <div class="fg"><label class="fl">اسم المجموعة / المسؤول</label><input type="text" id="f_group" class="fc" placeholder="اسم المجموعة التي ينتمي لها"></div>
     <div class="fg"><label class="fl">الاشتراك الشهري المخصص</label><input type="number" id="f_fee" class="fc" placeholder="اتركه فارغاً للسعر الافتراضي"></div>
     <div class="fg"><label class="fl">تاريخ الانضمام</label><input type="date" id="f_join" class="fc" value="${td()}"></div>
     <div class="fg"><label class="fl">ملاحظات</label><input type="text" id="f_notes" class="fc" placeholder="اختياري"></div>
@@ -688,6 +689,7 @@ async function saveMember(){
   const name=document.getElementById('f_name').value.trim();
   const phone=document.getElementById('f_phone').value.trim();
   const pass=document.getElementById('f_pass').value.trim();
+  const group=document.getElementById('f_group').value.trim();
   const fee=parseInt(document.getElementById('f_fee').value)||0; 
   const join=document.getElementById('f_join').value;
   const notes=document.getElementById('f_notes').value.trim();
@@ -695,7 +697,7 @@ async function saveMember(){
   if(arr(S.members).find(m=>m.phone===phone)){showAlert('❌ رقم الهاتف مستخدم مسبقاً','err');return}
   const id='M'+uid();
   try{
-    await fset(`members/${id}`,{id,name,phone,pass,fee,joined:join,notes,active:true,created:td()});
+    await fset(`members/${id}`,{id,name,phone,pass,group,fee,joined:join,notes,active:true,created:td()});
     closeOv();showAlert('✅ تم إضافة العضو');
     refreshCurrentPage();
   }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
@@ -708,6 +710,7 @@ function openEditMember(mid){
     <div class="fg"><label class="fl">الاسم الكامل</label><input type="text" id="e_name" class="fc" value="${m.name}"></div>
     <div class="fg"><label class="fl">رقم الهاتف</label><input type="tel" id="e_phone" class="fc" value="${m.phone}"></div>
     <div class="fg"><label class="fl">كلمة مرور العضو</label><input type="text" id="e_pass" class="fc" value="${m.pass||''}"></div>
+    <div class="fg"><label class="fl">اسم المجموعة / المسؤول</label><input type="text" id="e_group" class="fc" value="${m.group||''}" placeholder="اسم المجموعة"></div>
     <div class="fg"><label class="fl">الاشتراك الشهري المخصص</label><input type="number" id="e_fee" class="fc" value="${m.fee||''}" placeholder="السعر الافتراضي"></div>
     <div class="fg"><label class="fl">ملاحظات</label><input type="text" id="e_notes" class="fc" value="${m.notes||''}"></div>
     <button class="btn btn-p" onclick="updateMember('${mid}')">💾 حفظ التعديلات</button>
@@ -719,6 +722,7 @@ async function updateMember(mid){
     name:document.getElementById('e_name').value.trim(),
     phone:document.getElementById('e_phone').value.trim(),
     pass:document.getElementById('e_pass').value.trim(),
+    group:document.getElementById('e_group').value.trim(),
     fee:parseInt(document.getElementById('e_fee').value)||0,
     notes:document.getElementById('e_notes').value.trim()
   };
@@ -918,7 +922,7 @@ async function deleteJumaa(jid){
 }
 
 // ═══════════════════════════════════════
-// VISITS (المعدلة لدعم تحديد الأيام)
+// VISITS
 // ═══════════════════════════════════════
 function renderVisits(){
   const visits=arr(S.visits).sort((a,z)=>z.date.localeCompare(a.date));
@@ -1360,7 +1364,6 @@ function refreshCurrentPage(){
   else if(CP==='settings'){renderSettings();}
   else if(CP==='profile')renderProfile();
   else if(CP==='detail'){
-    // تحديث صفحة التفاصيل المفتوحة حالياً لتجنب إغلاقها عند التحديث
     const detailId = document.getElementById('detailContent').innerHTML.match(/'(M[A-Z0-9]+|J[A-Z0-9]+|V[A-Z0-9]+)'/);
     if(detailId && detailId[1]){
         if(detailId[1].startsWith('M')) openMemberDetail(detailId[1]);
