@@ -449,7 +449,6 @@ function arr(o){return Object.values(o||{})}
 function td(){return new Date().toISOString().split('T')[0]}
 function uid(){return Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,5).toUpperCase()}
 function fmt(n){if(typeof n!=='number')n=parseInt(n)||0;return n.toLocaleString('ar-IQ')+' '+(S.settings?.currency||'د.ع')}
-function setSyncing(on){} // placeholder
 function showAlert(msg,type='ok'){
   const el=document.getElementById('alertBox');
   el.textContent=msg;el.className=`alert al-${type} show`;
@@ -544,9 +543,17 @@ function filterMembers(){
 }
 
 function renderMList(ms){
-  if(!ms.length){document.getElementById('membersList').innerHTML=`<div class="empty"><div class="ei">👤</div><div class="et">لا يوجد أعضاء</div></div>`;return}
-  const defaultFee=S.settings?.monthlyFee||10000;
-  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:12px;color:var(--text2)">${ms.length} عضو</span><button class="btn btn-p btn-sm" onclick="openAddMember()">+ إضافة عضو</button></div>`;
+  // --- إصلاح الخطأ: وضع زر الإضافة قبل شرط القائمة الفارغة ---
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <span style="font-size:12px;color:var(--text2)">${ms.length} عضو</span>
+    <button class="btn btn-p btn-sm" onclick="openAddMember()">+ إضافة عضو</button>
+  </div>`;
+
+  if(!ms.length){
+    document.getElementById('membersList').innerHTML = h + `<div class="empty"><div class="ei">👤</div><div class="et">لا يوجد أعضاء</div></div>`;
+    return;
+  }
+
   ms.forEach(m=>{
     const {paid,months}=calcMonths(m.id);
     const att=calcAttendance(m.id);
@@ -581,7 +588,6 @@ function openMemberDetail(mid){
   const now=new Date();
   const mNames=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   let mHtml=`<div class="months-row">`;
-  // Show paid months starting from join date
   for(let i=0;i<12;i++){
     const isPaid=i<months;
     mHtml+=`<div class="month-box ${isPaid?'paid':''}">
@@ -593,16 +599,14 @@ function openMemberDetail(mid){
 
   // Jumaa history
   const myJumaa=arr(S.jumaa).filter(j=>j.attendees&&j.attendees[mid]).sort((a,z)=>z.date.localeCompare(a.date));
-  let jHtml=myJumaa.length?'':
-    `<div class="empty"><div class="ei">🕌</div><div class="et">لم يسجل حضور جمعة بعد</div></div>`;
+  let jHtml=myJumaa.length?'':`<div class="empty"><div class="ei">🕌</div><div class="et">لم يسجل حضور جمعة بعد</div></div>`;
   myJumaa.slice(0,5).forEach(j=>{
     jHtml+=`<div class="jumaa-item"><div class="jumaa-dot"></div><div><div class="jumaa-date">${j.date}</div></div><span class="badge b-green">✅ حضر</span></div>`;
   });
 
   // Visits history
   const myVisits=arr(S.visits).filter(v=>v.attendees&&v.attendees[mid]).sort((a,z)=>z.date.localeCompare(a.date));
-  let vHtml=myVisits.length?'':
-    `<div class="empty"><div class="ei">🌿</div><div class="et">لم يسجل حضور زيارة بعد</div></div>`;
+  let vHtml=myVisits.length?'':`<div class="empty"><div class="ei">🌿</div><div class="et">لم يسجل حضور زيارة بعد</div></div>`;
   myVisits.forEach(v=>{
     const servedDays = typeof v.attendees[mid] === 'number' ? v.attendees[mid] : (v.days||1);
     vHtml+=`<div class="visit-card">
