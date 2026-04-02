@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <style>
 :root{
 --navy:#0a1628;--navy2:#112240;--blue:#1565c0;--blue2:#1976d2;--blueli:#e3f2fd;
@@ -60,7 +61,8 @@ body{font-family:'Cairo',sans-serif;background:var(--gray);color:var(--text);min
 /* ═══ TOPBAR ═══ */
 .topbar{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.3)}
 .tb-left{display:flex;align-items:center;gap:8px}
-.tb-av{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--navy)}
+.tb-av{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--navy);overflow:hidden;}
+.tb-av img{width:100%;height:100%;object-fit:cover;}
 .tb-name{font-size:12px;color:rgba(255,255,255,.8);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tb-role{font-size:10px;color:var(--gold);font-weight:700}
 .tb-title{font-size:13px;font-weight:800;color:var(--gold);text-align:center}
@@ -131,7 +133,8 @@ select.fc{cursor:pointer}
 /* ═══ MEMBER CARD ═══ */
 .mcard{background:#fff;border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh2);margin-bottom:9px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .2s;border:1.5px solid transparent}
 .mcard:active{border-color:var(--blue2)}
-.mav{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;flex-shrink:0}
+.mav{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;}
+.mav img{width:100%;height:100%;object-fit:cover;}
 .minfo{flex:1;min-width:0}
 .mname{font-size:13.5px;font-weight:700;color:var(--navy)}
 .msub{font-size:10.5px;color:var(--text2);margin-top:2px}
@@ -178,7 +181,8 @@ select.fc{cursor:pointer}
 
 /* ═══ MEMBER PROFILE (user view) ═══ */
 .profile-hdr{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--r);padding:20px 16px;margin-bottom:14px;color:#fff;text-align:center}
-.profile-av{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8c96a);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:var(--navy);margin:0 auto 12px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.profile-av{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8c96a);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:var(--navy);margin:0 auto 12px;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;}
+.profile-av img{width:100%;height:100%;object-fit:cover;}
 .profile-name{font-size:18px;font-weight:800}
 .profile-sub{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:3px}
 
@@ -308,6 +312,7 @@ firebase.initializeApp({
   appId:"1:360098880295:web:72bb1b53516bfed364e702"
 });
 const fdb = firebase.database();
+const fst = firebase.storage(); // تهيئة خدمة التخزين
 
 // ═══════════════════════════════════════
 // STATE
@@ -327,6 +332,13 @@ const fupd = (p,d) => fdb.ref(p).update(d);
 const fdel = (p)   => fdb.ref(p).remove();
 const fget = (p)   => fdb.ref(p).once('value').then(s=>s.val());
 const fpush = (p,d) => fdb.ref(p).push(d);
+
+// دالة لرفع الصورة وإرجاع الرابط
+async function uploadImage(file, path) {
+  const ref = fst.ref(path);
+  await ref.put(file);
+  return await ref.getDownloadURL();
+}
 
 // ═══════════════════════════════════════
 // INIT DEFAULT DATA
@@ -394,7 +406,7 @@ function doLogout(){
 function bootApp() {
   const sess=getSess();if(!sess)return;
   document.getElementById('app').style.display='flex';
-  document.getElementById('tbAv').textContent=sess.name.charAt(0);
+  document.getElementById('tbAv').innerHTML= sess.photo ? `<img src="${sess.photo}">` : sess.name.charAt(0);
   document.getElementById('tbName').textContent=sess.name;
   document.getElementById('tbRole').textContent=sess.role==='admin'?'👑 مدير عام':'🔑 معاون';
   buildAdminNav();
@@ -404,7 +416,7 @@ function bootApp() {
 function bootMemberApp() {
   const sess=getSess();if(!sess)return;
   document.getElementById('app').style.display='flex';
-  document.getElementById('tbAv').textContent=sess.name.charAt(0);
+  document.getElementById('tbAv').innerHTML= sess.photo ? `<img src="${sess.photo}">` : sess.name.charAt(0);
   document.getElementById('tbName').textContent=sess.name;
   document.getElementById('tbRole').textContent='👤 عضو';
   buildMemberNav();
@@ -468,7 +480,6 @@ function avatarColor(id){
   return c[Math.abs(h)%c.length];
 }
 
-// Calculate member subscription months
 function calcMonths(mid){
   const m=S.members[mid];if(!m)return{paid:0,months:0,paidMonths:[],fee:0};
   const fee = m.fee ? parseInt(m.fee) : (S.settings?.monthlyFee||10000);
@@ -477,7 +488,6 @@ function calcMonths(mid){
   return{paid,months,fee};
 }
 
-// Count member attendance
 function calcAttendance(mid){
   const jumaaDays=arr(S.jumaa).filter(j=>j.attendees&&j.attendees[mid]).length;
   const visitDays=arr(S.visits).filter(v=>v.attendees&&v.attendees[mid]).reduce((s,v)=>{
@@ -504,7 +514,6 @@ function renderHome(){
     <div class="stat-card sc-gold"><div class="sv" style="font-size:18px">${fmt(totalPaid)}</div><div class="sl">إجمالي الاشتراكات</div></div>
   `;
 
-  // Recent activities
   const recentJumaa=arr(S.jumaa).sort((a,z)=>z.date.localeCompare(a.date)).slice(0,3);
   const recentVisits=arr(S.visits).sort((a,z)=>z.date.localeCompare(a.date)).slice(0,3);
 
@@ -543,7 +552,6 @@ function filterMembers(){
 }
 
 function renderMList(ms){
-  // --- إصلاح الخطأ: وضع زر الإضافة قبل شرط القائمة الفارغة ---
   let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
     <span style="font-size:12px;color:var(--text2)">${ms.length} عضو</span>
     <button class="btn btn-p btn-sm" onclick="openAddMember()">+ إضافة عضو</button>
@@ -559,8 +567,11 @@ function renderMList(ms){
     const att=calcAttendance(m.id);
     const color=avatarColor(m.id);
     const isGood=months>=1;
+    // عرض الصورة إذا كانت موجودة، وإلا عرض أول حرف من الاسم
+    const avHtml = m.photo ? `<img src="${m.photo}">` : m.name.charAt(0);
+    
     h+=`<div class="mcard" onclick="openMemberDetail('${m.id}')">
-      <div class="mav" style="background:${color}">${m.name.charAt(0)}</div>
+      <div class="mav" style="background:${color}">${avHtml}</div>
       <div class="minfo">
         <div class="mname">${m.name}</div>
         <div class="msub">📱 ${m.phone} ${m.group ? '· 👥 ' + m.group : ''} · 🕌 ${att.jumaaDays} جمعة</div>
@@ -584,8 +595,6 @@ function openMemberDetail(mid){
   const att=calcAttendance(mid);
   const color=avatarColor(mid);
 
-  // Months display (12 months of current year)
-  const now=new Date();
   const mNames=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   let mHtml=`<div class="months-row">`;
   for(let i=0;i<12;i++){
@@ -597,14 +606,12 @@ function openMemberDetail(mid){
   }
   mHtml+=`</div>`;
 
-  // Jumaa history
   const myJumaa=arr(S.jumaa).filter(j=>j.attendees&&j.attendees[mid]).sort((a,z)=>z.date.localeCompare(a.date));
   let jHtml=myJumaa.length?'':`<div class="empty"><div class="ei">🕌</div><div class="et">لم يسجل حضور جمعة بعد</div></div>`;
   myJumaa.slice(0,5).forEach(j=>{
     jHtml+=`<div class="jumaa-item"><div class="jumaa-dot"></div><div><div class="jumaa-date">${j.date}</div></div><span class="badge b-green">✅ حضر</span></div>`;
   });
 
-  // Visits history
   const myVisits=arr(S.visits).filter(v=>v.attendees&&v.attendees[mid]).sort((a,z)=>z.date.localeCompare(a.date));
   let vHtml=myVisits.length?'':`<div class="empty"><div class="ei">🌿</div><div class="et">لم يسجل حضور زيارة بعد</div></div>`;
   myVisits.forEach(v=>{
@@ -616,9 +623,11 @@ function openMemberDetail(mid){
     </div>`;
   });
 
+  const avHtml = m.photo ? `<img src="${m.photo}" style="width:100%;height:100%;object-fit:cover;">` : m.name.charAt(0);
+
   document.getElementById('detailContent').innerHTML=`
     <div style="background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--r);padding:18px;margin-bottom:14px;color:#fff;text-align:center">
-      <div style="width:64px;height:64px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;margin:0 auto 11px;box-shadow:0 4px 14px rgba(0,0,0,.3)">${m.name.charAt(0)}</div>
+      <div style="width:80px;height:80px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;margin:0 auto 11px;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;">${avHtml}</div>
       <div style="font-size:17px;font-weight:800">${m.name}</div>
       <div style="font-size:11.5px;color:rgba(255,255,255,.55);margin-top:3px">${m.phone}</div>
       <span class="badge ${m.active?'b-green':'b-red'}" style="margin-top:8px">${m.active?'نشط':'موقوف'}</span>
@@ -673,11 +682,30 @@ function openMemberDetail(mid){
 }
 
 // ═══════════════════════════════════════
-// ADD/EDIT MEMBER
+// ADD/EDIT MEMBER (دعم الصور)
 // ═══════════════════════════════════════
+function previewImg(input, targetId) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById(targetId).innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+    }
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
 function openAddMember(){
   openOv(`
     <div class="mtitle">👤 إضافة عضو جديد</div>
+    
+    <div style="text-align:center;margin-bottom:15px;">
+      <input type="file" id="f_photo" accept="image/*" style="display:none" onchange="previewImg(this, 'p_prev')">
+      <div id="p_prev" style="width:80px;height:80px;border-radius:50%;background:var(--gray2);margin:0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;border:2px dashed var(--blue2)" onclick="document.getElementById('f_photo').click()">
+        <span style="font-size:24px">📷</span>
+      </div>
+      <div style="font-size:10px;color:var(--text2);margin-top:5px">اضغط لاختيار صورة شخصية</div>
+    </div>
+
     <div class="fg"><label class="fl">الاسم الكامل *</label><input type="text" id="f_name" class="fc" placeholder="اسم العضو"></div>
     <div class="fg"><label class="fl">رقم الهاتف *</label><input type="tel" id="f_phone" class="fc" placeholder="07xxxxxxxxx"></div>
     <div class="fg"><label class="fl">كلمة مرور العضو *</label><input type="text" id="f_pass" class="fc" placeholder="كلمة المرور للدخول لصفحته"></div>
@@ -697,20 +725,50 @@ async function saveMember(){
   const fee=parseInt(document.getElementById('f_fee').value)||0; 
   const join=document.getElementById('f_join').value;
   const notes=document.getElementById('f_notes').value.trim();
+  const photoInput = document.getElementById('f_photo');
+
   if(!name||!phone||!pass){showAlert('❌ يرجى ملء الحقول المطلوبة','err');return}
   if(arr(S.members).find(m=>m.phone===phone)){showAlert('❌ رقم الهاتف مستخدم مسبقاً','err');return}
+  
   const id='M'+uid();
+  let photoUrl = '';
+
+  // إظهار شاشة التحميل بسبب وقت رفع الصورة
+  setLd('جاري حفظ البيانات ورفع الصورة...', 50);
+  document.getElementById('loading').style.display='flex';
+  document.getElementById('loading').style.opacity='1';
+
   try{
-    await fset(`members/${id}`,{id,name,phone,pass,group,fee,joined:join,notes,active:true,created:td()});
+    if(photoInput.files && photoInput.files.length > 0) {
+      photoUrl = await uploadImage(photoInput.files[0], `members/${id}_${Date.now()}`);
+    }
+    
+    await fset(`members/${id}`,{id,name,phone,pass,group,fee,photo:photoUrl,joined:join,notes,active:true,created:td()});
     closeOv();showAlert('✅ تم إضافة العضو');
     refreshCurrentPage();
-  }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
+  }catch(e){
+    showAlert('❌ خطأ: '+e.message,'err');
+  }
+
+  document.getElementById('loading').style.opacity='0';
+  setTimeout(()=>document.getElementById('loading').style.display='none', 500);
 }
 
 function openEditMember(mid){
   const m=S.members[mid];
+  const avHtml = m.photo ? `<img src="${m.photo}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:24px">📷</span>`;
+
   openOv(`
     <div class="mtitle">✏️ تعديل — ${m.name}</div>
+
+    <div style="text-align:center;margin-bottom:15px;">
+      <input type="file" id="e_photo" accept="image/*" style="display:none" onchange="previewImg(this, 'e_prev')">
+      <div id="e_prev" style="width:80px;height:80px;border-radius:50%;background:var(--gray2);margin:0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;border:2px dashed var(--blue2)" onclick="document.getElementById('e_photo').click()">
+        ${avHtml}
+      </div>
+      <div style="font-size:10px;color:var(--text2);margin-top:5px">اضغط لتغيير الصورة</div>
+    </div>
+
     <div class="fg"><label class="fl">الاسم الكامل</label><input type="text" id="e_name" class="fc" value="${m.name}"></div>
     <div class="fg"><label class="fl">رقم الهاتف</label><input type="tel" id="e_phone" class="fc" value="${m.phone}"></div>
     <div class="fg"><label class="fl">كلمة مرور العضو</label><input type="text" id="e_pass" class="fc" value="${m.pass||''}"></div>
@@ -722,14 +780,33 @@ function openEditMember(mid){
 }
 
 async function updateMember(mid){
+  const m = S.members[mid];
+  const photoInput = document.getElementById('e_photo');
+  let photoUrl = m.photo || '';
+
+  if(photoInput.files && photoInput.files.length > 0) {
+    setLd('جاري رفع الصورة الجديدة...', 50);
+    document.getElementById('loading').style.display='flex';
+    document.getElementById('loading').style.opacity='1';
+    try {
+      photoUrl = await uploadImage(photoInput.files[0], `members/${mid}_${Date.now()}`);
+    } catch(e) {
+      showAlert('❌ خطأ في رفع الصورة', 'err');
+    }
+    document.getElementById('loading').style.opacity='0';
+    setTimeout(()=>document.getElementById('loading').style.display='none', 500);
+  }
+
   const updates={
     name:document.getElementById('e_name').value.trim(),
     phone:document.getElementById('e_phone').value.trim(),
     pass:document.getElementById('e_pass').value.trim(),
     group:document.getElementById('e_group').value.trim(),
     fee:parseInt(document.getElementById('e_fee').value)||0,
+    photo:photoUrl,
     notes:document.getElementById('e_notes').value.trim()
   };
+  
   try{await fupd(`members/${mid}`,updates);closeOv();showAlert('✅ تم حفظ التعديلات');openMemberDetail(mid);}
   catch(e){showAlert('❌ خطأ','err')}
 }
@@ -788,8 +865,8 @@ async function savePayment(mid){
   const sess=getSess();
   try{
     await fset(`payments/${id}`,{id,mid,amount:amt,date,note,by:sess.id,created:td()});
-    const {months,fee}=calcMonths(mid);
-    closeOv();showAlert(`✅ تم تسجيل الدفعة — أصبح لديه ${months+Math.floor(amt/(fee||10000))} شهر`);
+    const {months}=calcMonths(mid);
+    closeOv();showAlert(`✅ تم تسجيل الدفعة`);
     openMemberDetail(mid);
   }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
 }
@@ -1078,9 +1155,11 @@ function renderFinance(){
     const {paid,months}=calcMonths(m.id);
     const color=avatarColor(m.id);
     const isGood=months>=1;
+    const avHtml = m.photo ? `<img src="${m.photo}" style="width:100%;height:100%;object-fit:cover;">` : m.name.charAt(0);
+
     h+=`<div class="irow" onclick="openAddPayment('${m.id}')" style="cursor:pointer">
       <div style="display:flex;align-items:center;gap:8px">
-        <div style="width:32px;height:32px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0">${m.name.charAt(0)}</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;">${avHtml}</div>
         <div>
           <div style="font-weight:700;font-size:12.5px">${m.name}</div>
           <div style="font-size:10.5px;color:var(--text2)">${fmt(paid)} مدفوع</div>
@@ -1154,9 +1233,11 @@ function renderProfile(){
     </div>`;
   });
 
+  const avHtml = m.photo ? `<img src="${m.photo}">` : m.name.charAt(0);
+
   document.getElementById('profileContent').innerHTML=`
     <div class="profile-hdr">
-      <div class="profile-av" style="background:${color};color:#fff">${m.name.charAt(0)}</div>
+      <div class="profile-av" style="background:${color};color:#fff">${avHtml}</div>
       <div class="profile-name">${m.name}</div>
       <div class="profile-sub">عضو في هيئة السيدة زينب عليها السلام</div>
     </div>
