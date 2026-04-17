@@ -60,8 +60,7 @@ body{font-family:'Cairo',sans-serif;background:var(--gray);color:var(--text);min
 /* ═══ TOPBAR ═══ */
 .topbar{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.3)}
 .tb-left{display:flex;align-items:center;gap:8px}
-.tb-av{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--navy);overflow:hidden;}
-.tb-av img{width:100%;height:100%;object-fit:cover;}
+.tb-av{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--navy)}
 .tb-name{font-size:12px;color:rgba(255,255,255,.8);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tb-role{font-size:10px;color:var(--gold);font-weight:700}
 .tb-title{font-size:13px;font-weight:800;color:var(--gold);text-align:center}
@@ -132,8 +131,7 @@ select.fc{cursor:pointer}
 /* ═══ MEMBER CARD ═══ */
 .mcard{background:#fff;border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh2);margin-bottom:9px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .2s;border:1.5px solid transparent}
 .mcard:active{border-color:var(--blue2)}
-.mav{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;}
-.mav img{width:100%;height:100%;object-fit:cover;}
+.mav{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;flex-shrink:0}
 .minfo{flex:1;min-width:0}
 .mname{font-size:13.5px;font-weight:700;color:var(--navy)}
 .msub{font-size:10.5px;color:var(--text2);margin-top:2px}
@@ -180,8 +178,7 @@ select.fc{cursor:pointer}
 
 /* ═══ MEMBER PROFILE (user view) ═══ */
 .profile-hdr{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--r);padding:20px 16px;margin-bottom:14px;color:#fff;text-align:center}
-.profile-av{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8c96a);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:var(--navy);margin:0 auto 12px;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;}
-.profile-av img{width:100%;height:100%;object-fit:cover;}
+.profile-av{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8c96a);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:var(--navy);margin:0 auto 12px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 .profile-name{font-size:18px;font-weight:800}
 .profile-sub{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:3px}
 
@@ -197,13 +194,6 @@ select.fc{cursor:pointer}
 .jumaa-date{font-size:12.5px;font-weight:700;color:var(--navy)}
 .jumaa-num{font-size:10.5px;color:var(--text2)}
 
-/* ═══ MINI LOADING ═══ */
-#miniLoading{position:fixed;inset:0;z-index:8000;background:rgba(10,22,40,.7);display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px}
-#miniLoading .ml-box{background:#fff;border-radius:16px;padding:24px 32px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.3)}
-#miniLoading .ml-icon{font-size:36px;margin-bottom:8px}
-#miniLoading .ml-txt{font-size:13px;font-weight:700;color:var(--navy)}
-#miniLoading .ml-sub{font-size:11px;color:var(--text2);margin-top:4px}
-
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:var(--gray3);border-radius:2px}
 </style>
@@ -216,15 +206,6 @@ select.fc{cursor:pointer}
   <p>نظام إدارة الأعضاء والخدمة</p>
   <div class="ld-status" id="ldSt">جاري الاتصال...</div>
   <div class="ld-bar"><div class="ld-fill" id="ldFill"></div></div>
-</div>
-
-<!-- ═══ MINI LOADING (بدلاً من الشاشة الكاملة) ═══ -->
-<div id="miniLoading">
-  <div class="ml-box">
-    <div class="ml-icon">🔄</div>
-    <div class="ml-txt" id="mlTxt">جاري المعالجة...</div>
-    <div class="ml-sub" id="mlSub">يرجى الانتظار</div>
-  </div>
 </div>
 
 <div id="loginPage">
@@ -263,42 +244,50 @@ select.fc{cursor:pointer}
 
   <div class="main">
 
+    <!-- ══ HOME (admin) ══ -->
     <div class="page active" id="page-home">
       <div class="stitle"><span>📊</span>لوحة التحكم</div>
       <div class="stats-grid" id="homeStats"></div>
       <div id="homeContent"></div>
     </div>
 
+    <!-- ══ MEMBERS ══ -->
     <div class="page" id="page-members">
       <div class="stitle"><span>👥</span>الأعضاء</div>
-      <div class="sbar"><span style="color:var(--text2)">🔍</span><input type="text" placeholder="بحث بالاسم أو الهاتف أو المجموعة..." id="msearch" oninput="filterMembers()"></div>
+      <div class="sbar"><span style="color:var(--text2)">🔍</span><input type="text" placeholder="بحث بالاسم أو الهاتف..." id="msearch" oninput="filterMembers()"></div>
       <div id="membersList"></div>
     </div>
 
+    <!-- ══ MEMBER DETAIL ══ -->
     <div class="page" id="page-detail">
       <button class="back-btn" onclick="goBack()">← رجوع</button>
       <div id="detailContent"></div>
     </div>
 
+    <!-- ══ JUMAA ══ -->
     <div class="page" id="page-jumaa">
       <div class="stitle"><span>🕌</span>الجمعة</div>
       <div id="jumaaContent"></div>
     </div>
 
+    <!-- ══ VISITS ══ -->
     <div class="page" id="page-visits">
       <div class="stitle"><span>🌿</span>الزيارات والمناسبات</div>
       <div id="visitsContent"></div>
     </div>
 
+    <!-- ══ FINANCE ══ -->
     <div class="page" id="page-finance">
       <div class="stitle"><span>💰</span>الاشتراكات المالية</div>
       <div id="financeContent"></div>
     </div>
 
+    <!-- ══ MEMBER PROFILE (self view) ══ -->
     <div class="page" id="page-profile">
       <div id="profileContent"></div>
     </div>
 
+    <!-- ══ SETTINGS ══ -->
     <div class="page" id="page-settings">
       <div class="stitle"><span>⚙️</span>الإعدادات</div>
       <div id="settingsContent"></div>
@@ -315,7 +304,7 @@ select.fc{cursor:pointer}
 
 <script>
 // ═══════════════════════════════════════
-// FIREBASE — بدون Storage (الصور تُحفظ كـ Base64 في Database)
+// FIREBASE
 // ═══════════════════════════════════════
 firebase.initializeApp({
   apiKey:"AIzaSyCYZXQFi97cz7Q7wQwbhq0RisHXMDOgVCw",
@@ -337,10 +326,14 @@ let S = {
 let SESSION = null;
 let CP = 'home';
 let prevPage = 'members';
-
-// تتبع صفحة التفصيل الحالية
-let currentDetailId = null;
-let currentDetailType = null; // 'member' | 'jumaa' | 'visit'
+// Scroll positions per page
+let scrollPos = {};
+// Track current open jumaa/visit id to restore detail
+let currentJumaaId = null;
+let currentVisitId = null;
+let currentMemberId = null;
+// Flag to prevent scroll reset during Firebase updates
+let isFirebaseUpdate = false;
 
 // ═══════════════════════════════════════
 // FIREBASE OPS
@@ -350,50 +343,6 @@ const fupd = (p,d) => fdb.ref(p).update(d);
 const fdel = (p)   => fdb.ref(p).remove();
 const fget = (p)   => fdb.ref(p).once('value').then(s=>s.val());
 const fpush = (p,d) => fdb.ref(p).push(d);
-
-// ═══════════════════════════════════════
-// تحويل الصورة إلى Base64 مضغوطة
-// ═══════════════════════════════════════
-function compressAndConvertToBase64(file, maxSize = 200) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const img = new Image();
-      img.onload = function() {
-        const canvas = document.createElement('canvas');
-        let w = img.width, h = img.height;
-        // ضغط الصورة إلى حجم أقصى
-        if (w > maxSize || h > maxSize) {
-          if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
-          else { w = Math.round(w * maxSize / h); h = maxSize; }
-        }
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        // جودة 0.7 للتقليل من الحجم
-        const base64 = canvas.toDataURL('image/jpeg', 0.7);
-        resolve(base64);
-      };
-      img.onerror = () => reject(new Error('فشل تحميل الصورة'));
-      img.src = e.target.result;
-    };
-    reader.onerror = () => reject(new Error('فشل قراءة الملف'));
-    reader.readAsDataURL(file);
-  });
-}
-
-// ═══════════════════════════════════════
-// MINI LOADING
-// ═══════════════════════════════════════
-function showMiniLoad(txt = 'جاري المعالجة...', sub = 'يرجى الانتظار') {
-  document.getElementById('mlTxt').textContent = txt;
-  document.getElementById('mlSub').textContent = sub;
-  document.getElementById('miniLoading').style.display = 'flex';
-}
-function hideMiniLoad() {
-  document.getElementById('miniLoading').style.display = 'none';
-}
 
 // ═══════════════════════════════════════
 // INIT DEFAULT DATA
@@ -461,7 +410,7 @@ function doLogout(){
 function bootApp() {
   const sess=getSess();if(!sess)return;
   document.getElementById('app').style.display='flex';
-  document.getElementById('tbAv').innerHTML= sess.photo ? `<img src="${sess.photo}">` : sess.name.charAt(0);
+  document.getElementById('tbAv').textContent=sess.name.charAt(0);
   document.getElementById('tbName').textContent=sess.name;
   document.getElementById('tbRole').textContent=sess.role==='admin'?'👑 مدير عام':'🔑 معاون';
   buildAdminNav();
@@ -471,7 +420,7 @@ function bootApp() {
 function bootMemberApp() {
   const sess=getSess();if(!sess)return;
   document.getElementById('app').style.display='flex';
-  document.getElementById('tbAv').innerHTML= sess.photo ? `<img src="${sess.photo}">` : sess.name.charAt(0);
+  document.getElementById('tbAv').textContent=sess.name.charAt(0);
   document.getElementById('tbName').textContent=sess.name;
   document.getElementById('tbRole').textContent='👤 عضو';
   buildMemberNav();
@@ -480,42 +429,46 @@ function bootMemberApp() {
 
 function buildAdminNav(){
   document.getElementById('bnav').innerHTML=`
-    <button class="bni active" data-page="home" onclick="nav('home',this)"><span class="ic">🏠</span>الرئيسية</button>
-    <button class="bni" data-page="members" onclick="nav('members',this)"><span class="ic">👥</span>الأعضاء</button>
-    <button class="bni" data-page="jumaa" onclick="nav('jumaa',this)"><span class="ic">🕌</span>الجمعة</button>
-    <button class="bni" data-page="visits" onclick="nav('visits',this)"><span class="ic">🌿</span>الزيارات</button>
-    <button class="bni" data-page="finance" onclick="nav('finance',this)"><span class="ic">💰</span>الاشتراكات</button>
-    <button class="bni" data-page="settings" onclick="nav('settings',this)"><span class="ic">⚙️</span>الإعدادات</button>
+    <button class="bni active" onclick="nav('home',this)"><span class="ic">🏠</span>الرئيسية</button>
+    <button class="bni" onclick="nav('members',this)"><span class="ic">👥</span>الأعضاء</button>
+    <button class="bni" onclick="nav('jumaa',this)"><span class="ic">🕌</span>الجمعة</button>
+    <button class="bni" onclick="nav('visits',this)"><span class="ic">🌿</span>الزيارات</button>
+    <button class="bni" onclick="nav('finance',this)"><span class="ic">💰</span>الاشتراكات</button>
+    <button class="bni" onclick="nav('settings',this)"><span class="ic">⚙️</span>الإعدادات</button>
   `;
 }
 
 function buildMemberNav(){
   document.getElementById('bnav').innerHTML=`
-    <button class="bni active" data-page="profile" onclick="nav('profile',this)"><span class="ic">👤</span>ملفي</button>
+    <button class="bni active" onclick="nav('profile',this)"><span class="ic">👤</span>ملفي</button>
   `;
 }
 
 // ═══════════════════════════════════════
 // NAV
 // ═══════════════════════════════════════
-function nav(page, btn) {
+function nav(page,btn){
+  // Save scroll position of current page
+  scrollPos[CP] = window.scrollY;
+
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  if(btn) btn.classList.add('active');
-  CP = page;
-  // إعادة تعيين تتبع التفصيل عند الانتقال لصفحة أخرى
-  if(page !== 'detail') {
-    currentDetailId = null;
-    currentDetailType = null;
+  if(btn)btn.classList.add('active');
+  CP=page;
+
+  // Restore scroll position of target page (not for detail - always scroll to remembered pos)
+  if(page!=='detail'){
+    setTimeout(()=>{
+      const pos = scrollPos[page]||0;
+      window.scrollTo(0, pos);
+    }, 30);
   }
 }
 
-function goBack() {
-  currentDetailId = null;
-  currentDetailType = null;
-  const targetBtn = document.querySelector(`.bni[data-page="${prevPage}"]`);
-  nav(prevPage, targetBtn);
+function goBack(){
+  currentMemberId=null;currentJumaaId=null;currentVisitId=null;
+  nav(prevPage,document.querySelector(`.bni[onclick*="${prevPage}"]`));
 }
 
 // ═══════════════════════════════════════
@@ -525,6 +478,7 @@ function arr(o){return Object.values(o||{})}
 function td(){return new Date().toISOString().split('T')[0]}
 function uid(){return Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,5).toUpperCase()}
 function fmt(n){if(typeof n!=='number')n=parseInt(n)||0;return n.toLocaleString('ar-IQ')+' '+(S.settings?.currency||'د.ع')}
+function setSyncing(on){} // placeholder
 function showAlert(msg,type='ok'){
   const el=document.getElementById('alertBox');
   el.textContent=msg;el.className=`alert al-${type} show`;
@@ -544,21 +498,19 @@ function avatarColor(id){
   return c[Math.abs(h)%c.length];
 }
 
-// ═══ FIX: حساب الأشهر مع معالجة fee=0 ═══
+// Calculate member subscription months
 function calcMonths(mid){
-  const m=S.members[mid];if(!m)return{paid:0,months:0,paidMonths:[],fee:0};
-  const fee = (m.fee && parseInt(m.fee) > 0) ? parseInt(m.fee) : (S.settings?.monthlyFee||10000);
+  const m=S.members[mid];if(!m)return{paid:0,months:0,paidMonths:[]};
+  const fee=S.settings?.monthlyFee||10000;
   const paid=arr(S.payments).filter(p=>p.mid===mid).reduce((s,p)=>s+p.amount,0);
   const months=fee>0?Math.floor(paid/fee):0;
   return{paid,months,fee};
 }
 
+// Count member attendance
 function calcAttendance(mid){
   const jumaaDays=arr(S.jumaa).filter(j=>j.attendees&&j.attendees[mid]).length;
-  const visitDays=arr(S.visits).filter(v=>v.attendees&&v.attendees[mid]).reduce((s,v)=>{
-    const d = v.attendees[mid];
-    return s + (typeof d === 'number' ? d : (v.days||1));
-  },0);
+  const visitDays=arr(S.visits).filter(v=>v.attendees&&v.attendees[mid]).reduce((s,v)=>s+(v.days||1),0);
   return{jumaaDays,visitDays,total:jumaaDays+visitDays};
 }
 
@@ -567,6 +519,7 @@ function calcAttendance(mid){
 // ═══════════════════════════════════════
 function renderHome(){
   const members=arr(S.members);
+  const activeMs=members.filter(m=>m.active);
   const totalJumaa=arr(S.jumaa).length;
   const totalVisits=arr(S.visits).length;
   const totalPaid=arr(S.payments).reduce((s,p)=>s+p.amount,0);
@@ -578,10 +531,11 @@ function renderHome(){
     <div class="stat-card sc-gold"><div class="sv" style="font-size:18px">${fmt(totalPaid)}</div><div class="sl">إجمالي الاشتراكات</div></div>
   `;
 
+  // Recent activities
   const recentJumaa=arr(S.jumaa).sort((a,z)=>z.date.localeCompare(a.date)).slice(0,3);
   const recentVisits=arr(S.visits).sort((a,z)=>z.date.localeCompare(a.date)).slice(0,3);
 
-  let h=`<div class="card"><div class="card-hd"><div class="card-tt">🕌 آخر الجمع</div><button class="btn btn-p btn-sm" onclick="nav('jumaa',document.querySelector('.bni[data-page=jumaa]'))">عرض الكل</button></div>`;
+  let h=`<div class="card"><div class="card-hd"><div class="card-tt">🕌 آخر الجمع</div><button class="btn btn-p btn-sm" onclick="nav('jumaa',document.querySelector('.bni[onclick*=jumaa]'))">عرض الكل</button></div>`;
   if(!recentJumaa.length){h+=`<div class="empty"><div class="ei">🕌</div><div class="et">لا توجد جمع مسجلة بعد</div></div>`}
   else recentJumaa.forEach(j=>{
     const cnt=j.attendees?Object.keys(j.attendees).length:0;
@@ -589,7 +543,7 @@ function renderHome(){
   });
   h+=`</div>`;
 
-  h+=`<div class="card"><div class="card-hd"><div class="card-tt">🌿 آخر الزيارات</div><button class="btn btn-p btn-sm" onclick="nav('visits',document.querySelector('.bni[data-page=visits]'))">عرض الكل</button></div>`;
+  h+=`<div class="card"><div class="card-hd"><div class="card-tt">🌿 آخر الزيارات</div><button class="btn btn-p btn-sm" onclick="nav('visits',document.querySelector('.bni[onclick*=visits]'))">عرض الكل</button></div>`;
   if(!recentVisits.length){h+=`<div class="empty"><div class="ei">🌿</div><div class="et">لا توجد زيارات مسجلة بعد</div></div>`}
   else recentVisits.forEach(v=>{
     const cnt=v.attendees?Object.keys(v.attendees).length:0;
@@ -609,39 +563,26 @@ function renderMembers(){
 }
 
 function filterMembers(){
-  const q=document.getElementById('msearch')?.value?.toLowerCase()||'';
+  const q=document.getElementById('msearch').value.toLowerCase();
   let ms=arr(S.members);
-  if(q)ms=ms.filter(m=>
-    (m.name&&m.name.toLowerCase().includes(q))||
-    (m.phone&&m.phone.includes(q))||
-    (m.group&&m.group.toLowerCase().includes(q))
-  );
+  if(q)ms=ms.filter(m=>m.name.includes(q)||m.phone.includes(q));
   renderMList(ms.sort((a,z)=>a.name.localeCompare(z.name,'ar')));
 }
 
 function renderMList(ms){
-  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-    <span style="font-size:12px;color:var(--text2)">${ms.length} عضو</span>
-    <button class="btn btn-p btn-sm" onclick="openAddMember()">+ إضافة عضو</button>
-  </div>`;
-
-  if(!ms.length){
-    document.getElementById('membersList').innerHTML = h + `<div class="empty"><div class="ei">👤</div><div class="et">لا يوجد أعضاء</div></div>`;
-    return;
-  }
-
+  if(!ms.length){document.getElementById('membersList').innerHTML=`<div class="empty"><div class="ei">👤</div><div class="et">لا يوجد أعضاء</div></div>`;return}
+  const fee=S.settings?.monthlyFee||10000;
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:12px;color:var(--text2)">${ms.length} عضو</span><button class="btn btn-p btn-sm" onclick="openAddMember()">+ إضافة عضو</button></div>`;
   ms.forEach(m=>{
     const {paid,months}=calcMonths(m.id);
     const att=calcAttendance(m.id);
     const color=avatarColor(m.id);
     const isGood=months>=1;
-    const avHtml = m.photo ? `<img src="${m.photo}">` : m.name.charAt(0);
-    
     h+=`<div class="mcard" onclick="openMemberDetail('${m.id}')">
-      <div class="mav" style="background:${color}">${avHtml}</div>
+      <div class="mav" style="background:${color}">${m.name.charAt(0)}</div>
       <div class="minfo">
         <div class="mname">${m.name}</div>
-        <div class="msub">📱 ${m.phone} ${m.group ? '· 👥 ' + m.group : ''} · 🕌 ${att.jumaaDays} جمعة</div>
+        <div class="msub">📱 ${m.phone} · 🕌 ${att.jumaaDays} جمعة · 🌿 ${att.visitDays} يوم</div>
       </div>
       <div class="mstat">
         <span class="badge ${isGood?'b-green':'b-red'}">${months} شهر</span>
@@ -657,15 +598,16 @@ function renderMList(ms){
 // ═══════════════════════════════════════
 function openMemberDetail(mid){
   prevPage='members';
-  currentDetailId = mid;
-  currentDetailType = 'member';
   const m=S.members[mid];if(!m)return;
   const {paid,months,fee}=calcMonths(mid);
   const att=calcAttendance(mid);
   const color=avatarColor(mid);
 
+  // Months display (12 months of current year)
+  const now=new Date();
   const mNames=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   let mHtml=`<div class="months-row">`;
+  // Show paid months starting from join date
   for(let i=0;i<12;i++){
     const isPaid=i<months;
     mHtml+=`<div class="month-box ${isPaid?'paid':''}">
@@ -675,28 +617,29 @@ function openMemberDetail(mid){
   }
   mHtml+=`</div>`;
 
+  // Jumaa history
   const myJumaa=arr(S.jumaa).filter(j=>j.attendees&&j.attendees[mid]).sort((a,z)=>z.date.localeCompare(a.date));
-  let jHtml=myJumaa.length?'':`<div class="empty"><div class="ei">🕌</div><div class="et">لم يسجل حضور جمعة بعد</div></div>`;
+  let jHtml=myJumaa.length?'':
+    `<div class="empty"><div class="ei">🕌</div><div class="et">لم يسجل حضور جمعة بعد</div></div>`;
   myJumaa.slice(0,5).forEach(j=>{
     jHtml+=`<div class="jumaa-item"><div class="jumaa-dot"></div><div><div class="jumaa-date">${j.date}</div></div><span class="badge b-green">✅ حضر</span></div>`;
   });
 
+  // Visits history
   const myVisits=arr(S.visits).filter(v=>v.attendees&&v.attendees[mid]).sort((a,z)=>z.date.localeCompare(a.date));
-  let vHtml=myVisits.length?'':`<div class="empty"><div class="ei">🌿</div><div class="et">لم يسجل حضور زيارة بعد</div></div>`;
+  let vHtml=myVisits.length?'':
+    `<div class="empty"><div class="ei">🌿</div><div class="et">لم يسجل حضور زيارة بعد</div></div>`;
   myVisits.forEach(v=>{
-    const servedDays = typeof v.attendees[mid] === 'number' ? v.attendees[mid] : (v.days||1);
     vHtml+=`<div class="visit-card">
       <div class="visit-title">${v.name}</div>
       <div class="visit-date">📅 ${v.date}</div>
-      <div class="visit-days">⏱️ ${servedDays} يوم خدمة</div>
+      <div class="visit-days">⏱️ ${v.days||1} يوم خدمة</div>
     </div>`;
   });
 
-  const avHtml = m.photo ? `<img src="${m.photo}" style="width:100%;height:100%;object-fit:cover;">` : m.name.charAt(0);
-
   document.getElementById('detailContent').innerHTML=`
     <div style="background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--r);padding:18px;margin-bottom:14px;color:#fff;text-align:center">
-      <div style="width:80px;height:80px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;margin:0 auto 11px;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;">${avHtml}</div>
+      <div style="width:64px;height:64px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;margin:0 auto 11px;box-shadow:0 4px 14px rgba(0,0,0,.3)">${m.name.charAt(0)}</div>
       <div style="font-size:17px;font-weight:800">${m.name}</div>
       <div style="font-size:11.5px;color:rgba(255,255,255,.55);margin-top:3px">${m.phone}</div>
       <span class="badge ${m.active?'b-green':'b-red'}" style="margin-top:8px">${m.active?'نشط':'موقوف'}</span>
@@ -729,7 +672,6 @@ function openMemberDetail(mid){
     <div class="card">
       <div class="card-hd"><div class="card-tt">📋 بيانات العضو</div><button class="btn btn-o btn-sm" onclick="openEditMember('${mid}')">✏️ تعديل</button></div>
       <div class="irow"><span class="ilbl">رقم الهاتف</span><span class="ival">${m.phone}</span></div>
-      <div class="irow"><span class="ilbl">المجموعة</span><span class="ival">${m.group||'—'}</span></div>
       <div class="irow"><span class="ilbl">تاريخ الانضمام</span><span class="ival">${m.joined||'—'}</span></div>
       ${m.notes?`<div class="irow"><span class="ilbl">ملاحظات</span><span class="ival">${m.notes}</span></div>`:''}
     </div>
@@ -746,45 +688,22 @@ function openMemberDetail(mid){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-detail').classList.add('active');
   document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));
-  document.querySelector('.bni[data-page="members"]')?.classList.add('active');
   CP='detail';
+  currentMemberId = mid;
+  currentJumaaId = null;
+  currentVisitId = null;
   window.scrollTo(0,0);
 }
 
 // ═══════════════════════════════════════
-// معاينة الصورة قبل الرفع
-// ═══════════════════════════════════════
-function previewImg(input, targetId) {
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const el = document.getElementById(targetId);
-      if(el) el.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
-}
-
-// ═══════════════════════════════════════
-// ADD/EDIT MEMBER — الصور تُحفظ كـ Base64
+// ADD/EDIT MEMBER
 // ═══════════════════════════════════════
 function openAddMember(){
   openOv(`
     <div class="mtitle">👤 إضافة عضو جديد</div>
-    
-    <div style="text-align:center;margin-bottom:15px;">
-      <input type="file" id="f_photo" accept="image/*" style="display:none" onchange="previewImg(this, 'p_prev')">
-      <div id="p_prev" style="width:80px;height:80px;border-radius:50%;background:var(--gray2);margin:0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;border:2px dashed var(--blue2)" onclick="document.getElementById('f_photo').click()">
-        <span style="font-size:24px">📷</span>
-      </div>
-      <div style="font-size:10px;color:var(--text2);margin-top:5px">اضغط لاختيار صورة شخصية (اختياري)</div>
-    </div>
-
     <div class="fg"><label class="fl">الاسم الكامل *</label><input type="text" id="f_name" class="fc" placeholder="اسم العضو"></div>
     <div class="fg"><label class="fl">رقم الهاتف *</label><input type="tel" id="f_phone" class="fc" placeholder="07xxxxxxxxx"></div>
     <div class="fg"><label class="fl">كلمة مرور العضو *</label><input type="text" id="f_pass" class="fc" placeholder="كلمة المرور للدخول لصفحته"></div>
-    <div class="fg"><label class="fl">اسم المجموعة / المسؤول</label><input type="text" id="f_group" class="fc" placeholder="اسم المجموعة التي ينتمي لها"></div>
-    <div class="fg"><label class="fl">الاشتراك الشهري المخصص</label><input type="number" id="f_fee" class="fc" placeholder="اتركه فارغاً للسعر الافتراضي"></div>
     <div class="fg"><label class="fl">تاريخ الانضمام</label><input type="date" id="f_join" class="fc" value="${td()}"></div>
     <div class="fg"><label class="fl">ملاحظات</label><input type="text" id="f_notes" class="fc" placeholder="اختياري"></div>
     <button class="btn btn-p" onclick="saveMember()">💾 إضافة العضو</button>
@@ -795,117 +714,53 @@ async function saveMember(){
   const name=document.getElementById('f_name').value.trim();
   const phone=document.getElementById('f_phone').value.trim();
   const pass=document.getElementById('f_pass').value.trim();
-  const group=document.getElementById('f_group').value.trim();
-  const feeVal=document.getElementById('f_fee').value;
-  const fee=feeVal?parseInt(feeVal):0;
   const join=document.getElementById('f_join').value;
   const notes=document.getElementById('f_notes').value.trim();
-  const photoInput = document.getElementById('f_photo');
-
   if(!name||!phone||!pass){showAlert('❌ يرجى ملء الحقول المطلوبة','err');return}
   if(arr(S.members).find(m=>m.phone===phone)){showAlert('❌ رقم الهاتف مستخدم مسبقاً','err');return}
-  
   const id='M'+uid();
-  let photoBase64 = '';
-
-  showMiniLoad('جاري حفظ بيانات العضو...', 'يرجى الانتظار');
-  
   try{
-    // تحويل الصورة إلى Base64 إذا وُجدت
-    if(photoInput.files && photoInput.files.length > 0) {
-      showMiniLoad('جاري معالجة الصورة...', 'ضغط وتحويل الصورة');
-      photoBase64 = await compressAndConvertToBase64(photoInput.files[0]);
-    }
-    
-    showMiniLoad('جاري الحفظ في قاعدة البيانات...', 'لحظة من فضلك');
-    await fset(`members/${id}`,{id,name,phone,pass,group,fee,photo:photoBase64,joined:join,notes,active:true,created:td()});
-    
-    hideMiniLoad();
-    closeOv();
-    showAlert('✅ تم إضافة العضو بنجاح');
-  } catch(e) {
-    hideMiniLoad();
-    showAlert('❌ خطأ في الحفظ: '+e.message,'err');
-  }
+    await fset(`members/${id}`,{id,name,phone,pass,joined:join,notes,active:true,created:td()});
+    closeOv();showAlert('✅ تم إضافة العضو');
+  }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
 }
 
 function openEditMember(mid){
   const m=S.members[mid];
-  if(!m)return;
-  const avHtml = m.photo ? `<img src="${m.photo}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:24px">📷</span>`;
-
   openOv(`
     <div class="mtitle">✏️ تعديل — ${m.name}</div>
-
-    <div style="text-align:center;margin-bottom:15px;">
-      <input type="file" id="e_photo" accept="image/*" style="display:none" onchange="previewImg(this, 'e_prev')">
-      <div id="e_prev" style="width:80px;height:80px;border-radius:50%;background:var(--gray2);margin:0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;border:2px dashed var(--blue2)" onclick="document.getElementById('e_photo').click()">
-        ${avHtml}
-      </div>
-      <div style="font-size:10px;color:var(--text2);margin-top:5px">اضغط لتغيير الصورة</div>
-    </div>
-
     <div class="fg"><label class="fl">الاسم الكامل</label><input type="text" id="e_name" class="fc" value="${m.name}"></div>
     <div class="fg"><label class="fl">رقم الهاتف</label><input type="tel" id="e_phone" class="fc" value="${m.phone}"></div>
     <div class="fg"><label class="fl">كلمة مرور العضو</label><input type="text" id="e_pass" class="fc" value="${m.pass||''}"></div>
-    <div class="fg"><label class="fl">اسم المجموعة / المسؤول</label><input type="text" id="e_group" class="fc" value="${m.group||''}" placeholder="اسم المجموعة"></div>
-    <div class="fg"><label class="fl">الاشتراك الشهري المخصص</label><input type="number" id="e_fee" class="fc" value="${m.fee||''}" placeholder="السعر الافتراضي"></div>
     <div class="fg"><label class="fl">ملاحظات</label><input type="text" id="e_notes" class="fc" value="${m.notes||''}"></div>
     <button class="btn btn-p" onclick="updateMember('${mid}')">💾 حفظ التعديلات</button>
   `);
 }
 
 async function updateMember(mid){
-  const m = S.members[mid];
-  if(!m){showAlert('❌ العضو غير موجود','err');return}
-  
-  const photoInput = document.getElementById('e_photo');
-  let photoBase64 = m.photo || '';
-
-  showMiniLoad('جاري حفظ التعديلات...', 'يرجى الانتظار');
-  
-  try {
-    if(photoInput.files && photoInput.files.length > 0) {
-      showMiniLoad('جاري معالجة الصورة الجديدة...', 'ضغط وتحويل الصورة');
-      photoBase64 = await compressAndConvertToBase64(photoInput.files[0]);
-    }
-
-    const updates = {
-      name: document.getElementById('e_name').value.trim(),
-      phone: document.getElementById('e_phone').value.trim(),
-      pass: document.getElementById('e_pass').value.trim(),
-      group: document.getElementById('e_group').value.trim(),
-      fee: parseInt(document.getElementById('e_fee').value)||0,
-      photo: photoBase64,
-      notes: document.getElementById('e_notes').value.trim()
-    };
-    
-    showMiniLoad('جاري الحفظ...', '');
-    await fupd(`members/${mid}`, updates);
-    
-    hideMiniLoad();
-    closeOv();
-    showAlert('✅ تم حفظ التعديلات');
-    openMemberDetail(mid);
-  } catch(e) {
-    hideMiniLoad();
-    showAlert('❌ خطأ: ' + e.message, 'err');
-  }
+  const updates={
+    name:document.getElementById('e_name').value.trim(),
+    phone:document.getElementById('e_phone').value.trim(),
+    pass:document.getElementById('e_pass').value.trim(),
+    notes:document.getElementById('e_notes').value.trim()
+  };
+  try{await fupd(`members/${mid}`,updates);closeOv();showAlert('✅ تم حفظ التعديلات');}
+  catch(e){showAlert('❌ خطأ','err')}
 }
 
 async function toggleMemberActive(mid,active){
   try{
     await fupd(`members/${mid}`,{active});
     showAlert(active?'✅ تم تفعيل العضو':'⏸️ تم تجميد العضو');
-    openMemberDetail(mid);
+    // Update badge without re-rendering
+    const badge=document.querySelector('.profile-status-badge');
+    if(badge){badge.className=`badge ${active?'b-green':'b-red'}`;badge.textContent=active?'نشط':'موقوف';}
   }catch(e){showAlert('❌ خطأ','err')}
 }
 
 async function deleteMember(mid){
   const m=S.members[mid];
-  if(!m)return;
   if(!confirm(`هل أنت متأكد من حذف العضو "${m.name}"؟\nسيتم حذف جميع بياناته نهائياً!`))return;
-  showMiniLoad('جاري حذف العضو...','');
   try{
     const u={};
     u[`members/${mid}`]=null;
@@ -913,11 +768,8 @@ async function deleteMember(mid){
     arr(S.jumaa).forEach(j=>{if(j.attendees&&j.attendees[mid])u[`jumaa/${j.id}/attendees/${mid}`]=null;});
     arr(S.visits).forEach(v=>{if(v.attendees&&v.attendees[mid])u[`visits/${v.id}/attendees/${mid}`]=null;});
     await fdb.ref().update(u);
-    hideMiniLoad();
-    showAlert('✅ تم حذف العضو');
-    currentDetailId=null; currentDetailType=null;
-    goBack();
-  }catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+    showAlert('✅ تم حذف العضو');goBack();
+  }catch(e){showAlert('❌ خطأ','err')}
 }
 
 // ═══════════════════════════════════════
@@ -925,7 +777,6 @@ async function deleteMember(mid){
 // ═══════════════════════════════════════
 function openAddPayment(mid){
   const m=S.members[mid];
-  if(!m)return;
   const {paid,months,fee}=calcMonths(mid);
   openOv(`
     <div class="mtitle">💰 تسجيل دفعة — ${m.name}</div>
@@ -935,7 +786,7 @@ function openAddPayment(mid){
     </div>
     <div class="fg"><label class="fl">المبلغ (${S.settings?.currency||'د.ع'}) *</label>
       <input type="number" id="p_amt" class="fc" placeholder="أدخل المبلغ">
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+      <div style="display:flex;gap:6px;margin-top:6px">
         <button class="btn btn-o btn-xs" onclick="document.getElementById('p_amt').value=${fee}">${fmt(fee)} — شهر</button>
         <button class="btn btn-o btn-xs" onclick="document.getElementById('p_amt').value=${fee*3}">${fmt(fee*3)} — 3 أشهر</button>
         <button class="btn btn-o btn-xs" onclick="document.getElementById('p_amt').value=${fee*6}">${fmt(fee*6)} — 6 أشهر</button>
@@ -954,14 +805,14 @@ async function savePayment(mid){
   if(amt<=0){showAlert('❌ يرجى إدخال مبلغ صحيح','err');return}
   const id='P'+uid();
   const sess=getSess();
-  showMiniLoad('جاري تسجيل الدفعة...','');
   try{
     await fset(`payments/${id}`,{id,mid,amount:amt,date,note,by:sess.id,created:td()});
-    hideMiniLoad();
+    const {months}=calcMonths(mid);
+    const newMonths = months + Math.floor(amt/(S.settings?.monthlyFee||10000));
     closeOv();
-    showAlert('✅ تم تسجيل الدفعة');
-    openMemberDetail(mid);
-  }catch(e){hideMiniLoad();showAlert('❌ خطأ: '+e.message,'err')}
+    showAlert(`✅ تم تسجيل الدفعة — أصبح لديه ${newMonths} شهر`);
+    // Don't re-open detail (Firebase listener will update it silently)
+  }catch(e){showAlert('❌ خطأ: '+e.message,'err')}
 }
 
 // ═══════════════════════════════════════
@@ -969,7 +820,6 @@ async function savePayment(mid){
 // ═══════════════════════════════════════
 function renderJumaa(){
   const jumaas=arr(S.jumaa).sort((a,z)=>z.date.localeCompare(a.date));
-  const activeCount = arr(S.members).filter(m=>m.active).length;
   let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <span style="font-size:13px;font-weight:700;color:var(--navy)">${jumaas.length} جمعة مسجلة</span>
     <button class="btn btn-p btn-sm" onclick="openNewJumaa()">+ تسجيل جمعة</button>
@@ -978,15 +828,14 @@ function renderJumaa(){
   if(!jumaas.length){h+=`<div class="empty"><div class="ei">🕌</div><div class="et">لا توجد جمع مسجلة بعد</div></div>`}
   else jumaas.forEach(j=>{
     const cnt=j.attendees?Object.keys(j.attendees).length:0;
-    const pct = activeCount > 0 ? Math.round(cnt/activeCount*100) : 0;
     h+=`<div class="card" style="cursor:pointer" onclick="openJumaaDetail('${j.id}')">
       <div class="card-hd">
         <div><div class="card-tt">🕌 جمعة ${j.date}</div><div style="font-size:10.5px;color:var(--text2);margin-top:2px">${j.notes||''}</div></div>
         <span class="badge b-green">${cnt} حضر</span>
       </div>
       <div class="pbar-wrap">
-        <div class="pbar-lbl"><span>نسبة الحضور</span><span>${pct}%</span></div>
-        <div class="pbar"><div class="pbar-fill" data-w="${pct}" style="width:0"></div></div>
+        <div class="pbar-lbl"><span>نسبة الحضور</span><span>${arr(S.members).length?Math.round(cnt/arr(S.members).filter(m=>m.active).length*100):0}%</span></div>
+        <div class="pbar"><div class="pbar-fill" data-w="${arr(S.members).filter(m=>m.active).length?Math.round(cnt/arr(S.members).filter(m=>m.active).length*100):0}" style="width:0"></div></div>
       </div>
     </div>`;
   });
@@ -1011,27 +860,22 @@ async function createJumaa(){
   if(arr(S.jumaa).find(j=>j.date===date)){showAlert('❌ هذه الجمعة مسجلة مسبقاً','err');return}
   const id='J'+uid();
   const sess=getSess();
-  showMiniLoad('جاري إنشاء الجمعة...','');
   try{
     await fset(`jumaa/${id}`,{id,date,notes,attendees:{},created:td(),by:sess.id});
-    hideMiniLoad();
-    closeOv();
-    showAlert('✅ تم إنشاء الجمعة');
+    closeOv();showAlert('✅ تم إنشاء الجمعة');
     setTimeout(()=>openJumaaDetail(id),300);
-  }catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+  }catch(e){showAlert('❌ خطأ','err')}
 }
 
 function openJumaaDetail(jid){
   prevPage='jumaa';
-  currentDetailId = jid;
-  currentDetailType = 'jumaa';
   const j=S.jumaa[jid];if(!j)return;
   const activeMembers=arr(S.members).filter(m=>m.active).sort((a,z)=>a.name.localeCompare(z.name,'ar'));
   const cnt=j.attendees?Object.keys(j.attendees).length:0;
 
   let h=`<div class="card" style="background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;margin-bottom:14px">
     <div style="font-size:16px;font-weight:800">🕌 جمعة ${j.date}</div>
-    <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px">${cnt} عضو من ${activeMembers.length} حضر</div>
+    <div id="jCount" style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px">${cnt} عضو من ${activeMembers.length} حضر</div>
     ${j.notes?`<div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">${j.notes}</div>`:''}
   </div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -1064,21 +908,24 @@ function openJumaaDetail(jid){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-detail').classList.add('active');
   document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));
-  document.querySelector('.bni[data-page="jumaa"]')?.classList.add('active');
-  CP='detail';window.scrollTo(0,0);
+  document.querySelector('.bni[onclick*="jumaa"]')?.classList.add('active');
+  CP='detail';
+  currentJumaaId = jid;
+  currentMemberId = null;
+  currentVisitId = null;
+  window.scrollTo(0,0);
 }
 
 async function toggleJumaaAtt(jid,mid,chkEl){
   const j=S.jumaa[jid];
-  if(!j)return;
   const isChecked=j.attendees&&j.attendees[mid];
   const card=document.getElementById(`jam_${mid}`);
   if(isChecked){
     chkEl.classList.remove('on');card.classList.remove('checked');
-    try{await fdel(`jumaa/${jid}/attendees/${mid}`);}catch(e){showAlert('❌ خطأ في الحذف','err')}
+    try{await fdel(`jumaa/${jid}/attendees/${mid}`);}catch(e){}
   }else{
     chkEl.classList.add('on');card.classList.add('checked');
-    try{await fset(`jumaa/${jid}/attendees/${mid}`,true);}catch(e){showAlert('❌ خطأ في التسجيل','err')}
+    try{await fset(`jumaa/${jid}/attendees/${mid}`,true);}catch(e){}
   }
 }
 
@@ -1086,24 +933,21 @@ async function selectAllJumaa(jid,select){
   const active=arr(S.members).filter(m=>m.active);
   const updates={};
   active.forEach(m=>{updates[`jumaa/${jid}/attendees/${m.id}`]=select?true:null;});
-  showMiniLoad(select?'جاري تحديد الكل...':'جاري مسح الكل...','');
   try{
     await fdb.ref().update(updates);
-    hideMiniLoad();
-    openJumaaDetail(jid);
-  }catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+    active.forEach(m=>{
+      const chk=document.getElementById(`chk_${m.id}`);
+      const card=document.getElementById(`jam_${m.id}`);
+      if(chk)chk.className=`chk ${select?'on':''}`;
+      if(card)card.className=`att-member ${select?'checked':''}`;
+    });
+  }catch(e){}
 }
 
 async function deleteJumaa(jid){
   if(!confirm('هل أنت متأكد من حذف هذه الجمعة؟'))return;
-  showMiniLoad('جاري الحذف...','');
-  try{
-    await fdel(`jumaa/${jid}`);
-    hideMiniLoad();
-    showAlert('✅ تم الحذف');
-    currentDetailId=null; currentDetailType=null;
-    nav('jumaa',document.querySelector('.bni[data-page="jumaa"]'));
-  }catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+  try{await fdel(`jumaa/${jid}`);showAlert('✅ تم الحذف');nav('jumaa',document.querySelector('.bni[onclick*="jumaa"]'));}
+  catch(e){showAlert('❌ خطأ','err')}
 }
 
 // ═══════════════════════════════════════
@@ -1153,27 +997,22 @@ async function createVisit(){
   if(!name||!date){showAlert('❌ يرجى ملء الحقول المطلوبة','err');return}
   const id='V'+uid();
   const sess=getSess();
-  showMiniLoad('جاري إنشاء الزيارة...','');
   try{
     await fset(`visits/${id}`,{id,name,date,days,notes,attendees:{},created:td(),by:sess.id});
-    hideMiniLoad();
-    closeOv();
-    showAlert('✅ تم إنشاء الزيارة');
+    closeOv();showAlert('✅ تم إنشاء الزيارة');
     setTimeout(()=>openVisitDetail(id),300);
-  }catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+  }catch(e){showAlert('❌ خطأ','err')}
 }
 
 function openVisitDetail(vid){
   prevPage='visits';
-  currentDetailId = vid;
-  currentDetailType = 'visit';
   const v=S.visits[vid];if(!v)return;
   const activeMembers=arr(S.members).filter(m=>m.active).sort((a,z)=>a.name.localeCompare(z.name,'ar'));
   const cnt=v.attendees?Object.keys(v.attendees).length:0;
 
   let h=`<div class="card" style="background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;margin-bottom:14px">
     <div style="font-size:16px;font-weight:800">🌿 ${v.name}</div>
-    <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px">📅 ${v.date} · ⏱️ ${v.days||1} يوم · 👥 ${cnt} عضو</div>
+    <div id="vCount" style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px">📅 ${v.date} · ⏱️ ${v.days||1} يوم · 👥 <span>${cnt}</span> عضو</div>
     ${v.notes?`<div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">${v.notes}</div>`:''}
   </div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -1186,14 +1025,9 @@ function openVisitDetail(vid){
   <div class="att-grid" id="vAttGrid">`;
 
   activeMembers.forEach(m=>{
-    const isChecked=v.attendees&&v.attendees[m.id]!==undefined&&v.attendees[m.id]!==null&&v.attendees[m.id]!==false;
-    const servedDays = isChecked ? (typeof v.attendees[m.id] === 'number' ? v.attendees[m.id] : (v.days||1)) : 0;
-    
+    const isChecked=v.attendees&&v.attendees[m.id];
     h+=`<div class="att-member ${isChecked?'checked':''}" id="vam_${m.id}">
-      <div>
-        <div class="am-name">${m.name}</div>
-        <div class="am-sub" style="${isChecked?'color:var(--green2);font-weight:bold;':''}">${m.phone} ${isChecked ? `(خدم ${servedDays} يوم)` : ''}</div>
-      </div>
+      <div><div class="am-name">${m.name}</div><div class="am-sub">${m.phone}</div></div>
       <div class="chk ${isChecked?'on':''}" id="vchk_${m.id}" onclick="toggleVisitAtt('${vid}','${m.id}',this)">
         <span>✓</span>
       </div>
@@ -1209,78 +1043,46 @@ function openVisitDetail(vid){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-detail').classList.add('active');
   document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));
-  document.querySelector('.bni[data-page="visits"]')?.classList.add('active');
-  CP='detail';window.scrollTo(0,0);
+  document.querySelector('.bni[onclick*="visits"]')?.classList.add('active');
+  CP='detail';
+  currentVisitId = vid;
+  currentMemberId = null;
+  currentJumaaId = null;
+  window.scrollTo(0,0);
 }
 
 async function toggleVisitAtt(vid,mid,chkEl){
   const v=S.visits[vid];
-  if(!v)return;
-  const isChecked=v.attendees&&v.attendees[mid]!==undefined&&v.attendees[mid]!==null&&v.attendees[mid]!==false;
-  
+  const isChecked=v.attendees&&v.attendees[mid];
+  const card=document.getElementById(`vam_${mid}`);
   if(isChecked){
-    // تحديث واجهة المستخدم فوراً
-    const card=document.getElementById(`vam_${mid}`);
-    if(chkEl)chkEl.classList.remove('on');
-    if(card){card.classList.remove('checked');card.querySelector('.am-sub').style.color='';card.querySelector('.am-sub').style.fontWeight='';}
-    try{
-      await fdel(`visits/${vid}/attendees/${mid}`);
-    }catch(e){
-      // استعادة الحالة عند الخطأ
-      if(chkEl)chkEl.classList.add('on');
-      if(card)card.classList.add('checked');
-      showAlert('❌ خطأ في الحذف','err');
-    }
+    chkEl.classList.remove('on');card.classList.remove('checked');
+    try{await fdel(`visits/${vid}/attendees/${mid}`);}catch(e){}
   }else{
-    let d = prompt(`كم عدد الأيام التي خدمها العضو؟\n(أيام المناسبة: ${v.days||1} يوم)`, v.days||1);
-    if(d===null) return; 
-    d = parseInt(d) || (v.days||1);
-    if(d<=0) d = v.days||1;
-    
-    // تحديث واجهة المستخدم فوراً
-    const card=document.getElementById(`vam_${mid}`);
-    const sub=card?.querySelector('.am-sub');
-    if(chkEl)chkEl.classList.add('on');
-    if(card)card.classList.add('checked');
-    if(sub){sub.style.color='var(--green2)';sub.style.fontWeight='bold';sub.textContent=sub.textContent.replace(/\s*\(خدم.*?\)/,'')+(` (خدم ${d} يوم)`);}
-    
-    try{
-      await fset(`visits/${vid}/attendees/${mid}`, d);
-    }catch(e){
-      // استعادة الحالة عند الخطأ
-      if(chkEl)chkEl.classList.remove('on');
-      if(card)card.classList.remove('checked');
-      showAlert('❌ خطأ في التسجيل','err');
-    }
+    chkEl.classList.add('on');card.classList.add('checked');
+    try{await fset(`visits/${vid}/attendees/${mid}`,true);}catch(e){}
   }
 }
 
 async function selectAllVisit(vid,select){
   const active=arr(S.members).filter(m=>m.active);
-  const v=S.visits[vid];
-  if(!v)return;
   const updates={};
-  active.forEach(m=>{
-    updates[`visits/${vid}/attendees/${m.id}`]=select ? (v.days||1) : null;
-  });
-  showMiniLoad(select?'جاري تحديد الكل...':'جاري مسح الكل...','');
+  active.forEach(m=>{updates[`visits/${vid}/attendees/${m.id}`]=select?true:null;});
   try{
     await fdb.ref().update(updates);
-    hideMiniLoad();
-    openVisitDetail(vid);
-  }catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+    active.forEach(m=>{
+      const chk=document.getElementById(`vchk_${m.id}`);
+      const card=document.getElementById(`vam_${m.id}`);
+      if(chk)chk.className=`chk ${select?'on':''}`;
+      if(card)card.className=`att-member ${select?'checked':''}`;
+    });
+  }catch(e){}
 }
 
 async function deleteVisit(vid){
   if(!confirm('هل أنت متأكد من حذف هذه الزيارة؟'))return;
-  showMiniLoad('جاري الحذف...','');
-  try{
-    await fdel(`visits/${vid}`);
-    hideMiniLoad();
-    showAlert('✅ تم الحذف');
-    currentDetailId=null; currentDetailType=null;
-    nav('visits',document.querySelector('.bni[data-page="visits"]'));
-  }catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+  try{await fdel(`visits/${vid}`);showAlert('✅ تم الحذف');nav('visits',document.querySelector('.bni[onclick*="visits"]'));}
+  catch(e){showAlert('❌ خطأ','err')}
 }
 
 // ═══════════════════════════════════════
@@ -1288,6 +1090,7 @@ async function deleteVisit(vid){
 // ═══════════════════════════════════════
 function renderFinance(){
   const members=arr(S.members).sort((a,z)=>a.name.localeCompare(z.name,'ar'));
+  const fee=S.settings?.monthlyFee||10000;
   const totalPaid=arr(S.payments).reduce((s,p)=>s+p.amount,0);
   const totalMonths=members.reduce((s,m)=>s+calcMonths(m.id).months,0);
 
@@ -1301,11 +1104,9 @@ function renderFinance(){
     const {paid,months}=calcMonths(m.id);
     const color=avatarColor(m.id);
     const isGood=months>=1;
-    const avHtml = m.photo ? `<img src="${m.photo}" style="width:100%;height:100%;object-fit:cover;">` : m.name.charAt(0);
-
     h+=`<div class="irow" onclick="openAddPayment('${m.id}')" style="cursor:pointer">
       <div style="display:flex;align-items:center;gap:8px">
-        <div style="width:32px;height:32px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;">${avHtml}</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0">${m.name.charAt(0)}</div>
         <div>
           <div style="font-weight:700;font-size:12.5px">${m.name}</div>
           <div style="font-size:10.5px;color:var(--text2)">${fmt(paid)} مدفوع</div>
@@ -1319,13 +1120,14 @@ function renderFinance(){
   });
   h+=`</div>`;
 
-  const recentPays=arr(S.payments).sort((a,z)=>(z.created||'').localeCompare(a.created||'')).slice(0,10);
+  // Recent payments
+  const recentPays=arr(S.payments).sort((a,z)=>z.created?.localeCompare(a.created||'')||0).slice(0,10);
   h+=`<div class="card"><div class="card-hd"><div class="card-tt">📋 آخر الدفعات</div></div>`;
   if(!recentPays.length){h+=`<div class="empty"><div class="ei">💰</div><div class="et">لا توجد دفعات بعد</div></div>`}
   else recentPays.forEach(p=>{
     const m=S.members[p.mid];
     h+=`<div class="irow">
-      <div><div style="font-weight:700;font-size:12.5px">${m?m.name:'عضو محذوف'}</div><div style="font-size:10.5px;color:var(--text2)">${p.date||''}${p.note?' · '+p.note:''}</div></div>
+      <div><div style="font-weight:700;font-size:12.5px">${m?m.name:''}</div><div style="font-size:10.5px;color:var(--text2)">${p.date}${p.note?' · '+p.note:''}</div></div>
       <div style="color:var(--green2);font-weight:800;font-size:12.5px">${fmt(p.amount)}</div>
     </div>`;
   });
@@ -1341,15 +1143,13 @@ function renderProfile(){
   const sess=getSess();if(!sess)return;
   const mid=sess.id;
   const m=S.members[mid];
-  if(!m){
-    document.getElementById('profileContent').innerHTML=`<div class="empty"><div class="ei">⚠️</div><div class="et">لم يتم العثور على بيانات العضو</div></div>`;
-    return;
-  }
+  if(!m){document.getElementById('profileContent').innerHTML=`<div class="empty"><div class="ei">⚠️</div><div class="et">لم يتم العثور على بيانات العضو</div></div>`;return}
 
   const {paid,months,fee}=calcMonths(mid);
   const att=calcAttendance(mid);
   const color=avatarColor(mid);
 
+  // Months display
   const mNames=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   let mHtml=`<div class="months-row">`;
   for(let i=0;i<12;i++){
@@ -1361,28 +1161,27 @@ function renderProfile(){
   }
   mHtml+=`</div>`;
 
+  // Jumaa history
   const myJumaa=arr(S.jumaa).filter(j=>j.attendees&&j.attendees[mid]).sort((a,z)=>z.date.localeCompare(a.date));
   let jHtml='';
   myJumaa.slice(0,10).forEach(j=>{
     jHtml+=`<div class="jumaa-item"><div class="jumaa-dot"></div><div class="jumaa-date">${j.date}</div><span class="badge b-green" style="font-size:9.5px">✅ حضرت</span></div>`;
   });
 
+  // Visits history
   const myVisits=arr(S.visits).filter(v=>v.attendees&&v.attendees[mid]).sort((a,z)=>z.date.localeCompare(a.date));
   let vHtml='';
   myVisits.forEach(v=>{
-    const servedDays = typeof v.attendees[mid] === 'number' ? v.attendees[mid] : (v.days||1);
     vHtml+=`<div class="visit-card">
       <div class="visit-title">${v.name}</div>
       <div class="visit-date">📅 ${v.date}</div>
-      <div class="visit-days">⏱️ ${servedDays} يوم خدمة</div>
+      <div class="visit-days">⏱️ ${v.days||1} يوم خدمة</div>
     </div>`;
   });
 
-  const avHtml = m.photo ? `<img src="${m.photo}">` : m.name.charAt(0);
-
   document.getElementById('profileContent').innerHTML=`
     <div class="profile-hdr">
-      <div class="profile-av" style="background:${color};color:#fff">${avHtml}</div>
+      <div class="profile-av" style="background:${color};color:#fff">${m.name.charAt(0)}</div>
       <div class="profile-name">${m.name}</div>
       <div class="profile-sub">عضو في هيئة السيدة زينب عليها السلام</div>
     </div>
@@ -1422,7 +1221,7 @@ function renderSettings(){
   let h=`
     <div class="card"><div class="card-hd"><div class="card-tt">⚙️ إعدادات النظام</div></div>
       <div class="fg"><label class="fl">اسم الهيئة</label><input type="text" id="s_name" class="fc" value="${s.orgName||'هيئة السيدة زينب عليها السلام'}"></div>
-      <div class="fg"><label class="fl">الاشتراك الشهري (الافتراضي)</label><input type="number" id="s_fee" class="fc" value="${s.monthlyFee||10000}"></div>
+      <div class="fg"><label class="fl">الاشتراك الشهري</label><input type="number" id="s_fee" class="fc" value="${s.monthlyFee||10000}"></div>
       <div class="fg"><label class="fl">العملة</label><input type="text" id="s_cur" class="fc" value="${s.currency||'د.ع'}"></div>
       <button class="btn btn-p" onclick="saveSettings()">💾 حفظ الإعدادات</button>
     </div>
@@ -1479,16 +1278,12 @@ async function saveAdmin(){
   if(!name||!uname||!pass){showAlert('❌ يرجى ملء الحقول','err');return}
   if(arr(S.users).find(u=>u.uname===uname)){showAlert('❌ اسم الدخول مستخدم','err');return}
   const id='ADM'+uid();
-  showMiniLoad('جاري الإضافة...','');
-  try{
-    await fset(`users/${id}`,{id,uname,pass,name,role,active:true,created:td()});
-    hideMiniLoad();closeOv();showAlert('✅ تم الإضافة');
-  }catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+  try{await fset(`users/${id}`,{id,uname,pass,name,role,active:true,created:td()});closeOv();showAlert('✅ تم الإضافة');}
+  catch(e){showAlert('❌ خطأ','err')}
 }
 
 function openEditAdmin(uid_){
   const u=arr(S.users).find(x=>x.id===uid_);
-  if(!u)return;
   openOv(`
     <div class="mtitle">✏️ تعديل — ${u.name}</div>
     <div class="fg"><label class="fl">الاسم</label><input type="text" id="ea_name" class="fc" value="${u.name}"></div>
@@ -1500,33 +1295,21 @@ function openEditAdmin(uid_){
 }
 
 async function updateAdmin(uid_){
-  const updates={
-    name:document.getElementById('ea_name').value.trim(),
-    uname:document.getElementById('ea_uname').value.trim(),
-    pass:document.getElementById('ea_pass').value.trim(),
-    role:document.getElementById('ea_role').value
-  };
-  showMiniLoad('جاري الحفظ...','');
-  try{await fupd(`users/${uid_}`,updates);hideMiniLoad();closeOv();showAlert('✅ تم الحفظ');}
-  catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+  const updates={name:document.getElementById('ea_name').value.trim(),uname:document.getElementById('ea_uname').value.trim(),pass:document.getElementById('ea_pass').value.trim(),role:document.getElementById('ea_role').value};
+  try{await fupd(`users/${uid_}`,updates);closeOv();showAlert('✅ تم الحفظ');}
+  catch(e){showAlert('❌ خطأ','err')}
 }
 
 async function deleteAdmin(uid_){
   if(!confirm('هل أنت متأكد؟'))return;
-  showMiniLoad('جاري الحذف...','');
-  try{await fdel(`users/${uid_}`);hideMiniLoad();showAlert('✅ تم الحذف');}
-  catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+  try{await fdel(`users/${uid_}`);showAlert('✅ تم الحذف');}
+  catch(e){showAlert('❌ خطأ','err')}
 }
 
 async function saveSettings(){
-  const updates={
-    orgName:document.getElementById('s_name').value.trim(),
-    monthlyFee:parseInt(document.getElementById('s_fee').value)||10000,
-    currency:document.getElementById('s_cur').value.trim()||'د.ع'
-  };
-  showMiniLoad('جاري الحفظ...','');
-  try{await fupd('settings',updates);hideMiniLoad();showAlert('✅ تم حفظ الإعدادات');}
-  catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+  const updates={orgName:document.getElementById('s_name').value.trim(),monthlyFee:parseInt(document.getElementById('s_fee').value)||10000,currency:document.getElementById('s_cur').value.trim()||'د.ع'};
+  try{await fupd('settings',updates);showAlert('✅ تم حفظ الإعدادات');}
+  catch(e){showAlert('❌ خطأ','err')}
 }
 
 function openChangePass(){
@@ -1545,36 +1328,21 @@ async function changePass(uid_){
   const nw=document.getElementById('cp_new').value;
   const con=document.getElementById('cp_con').value;
   const user=arr(S.users).find(u=>u.id===uid_);
-  if(!user){showAlert('❌ خطأ في التحقق','err');return}
   if(user.pass!==old){showAlert('❌ كلمة المرور الحالية غلط','err');return}
   if(nw!==con){showAlert('❌ كلمات المرور غير متطابقة','err');return}
   if(nw.length<4){showAlert('❌ كلمة المرور قصيرة جداً','err');return}
-  showMiniLoad('جاري تغيير كلمة المرور...','');
-  try{
-    await fupd(`users/${uid_}`,{pass:nw});
-    setSess({...getSess(),pass:nw});
-    hideMiniLoad();closeOv();showAlert('✅ تم التغيير');
-  }catch(e){hideMiniLoad();showAlert('❌ خطأ','err')}
+  try{await fupd(`users/${uid_}`,{pass:nw});setSess({...getSess(),pass:nw});closeOv();showAlert('✅ تم التغيير');}
+  catch(e){showAlert('❌ خطأ','err')}
 }
 
 // ═══════════════════════════════════════
 // BACKUP
 // ═══════════════════════════════════════
 function exportBak(){
-  // استبعاد الصور من النسخة الاحتياطية لتقليل الحجم (اختياري)
-  const dataToExport = {
-    users: S.users,
-    members: S.members,
-    jumaa: S.jumaa,
-    visits: S.visits,
-    payments: S.payments,
-    settings: S.settings
-  };
-  const data=JSON.stringify(dataToExport,null,2);
+  const data=JSON.stringify(S,null,2);
   try{
     const blob=new Blob([data],{type:'application/json'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
     a.href=url;a.download=`zainab_haia_backup_${td()}.json`;
     document.body.appendChild(a);a.click();document.body.removeChild(a);
     setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -1590,7 +1358,6 @@ async function importBak(e){
       const data=JSON.parse(ev.target.result);
       if(!data.members){showAlert('❌ ملف غير صحيح','err');return}
       if(!confirm('سيتم استبدال جميع البيانات. هل أنت متأكد؟'))return;
-      showMiniLoad('جاري استيراد البيانات...','');
       const u={};
       if(data.members)u['members']=data.members;
       if(data.users)u['users']=data.users;
@@ -1599,12 +1366,10 @@ async function importBak(e){
       if(data.payments)u['payments']=data.payments;
       if(data.settings)u['settings']=data.settings;
       await fdb.ref().update(u);
-      hideMiniLoad();
       showAlert('✅ تم الاستيراد بنجاح');
       setTimeout(()=>location.reload(),1500);
-    }catch(err){hideMiniLoad();showAlert('❌ ملف غير صحيح','err')}
-  };
-  reader.readAsText(file);
+    }catch(err){showAlert('❌ ملف غير صحيح','err')}
+  };reader.readAsText(file);
 }
 
 // ═══════════════════════════════════════
@@ -1614,28 +1379,72 @@ function startListeners(){
   ['users','members','jumaa','visits','payments','settings'].forEach(path=>{
     fdb.ref(path).on('value',snap=>{
       S[path]=snap.val()||(path==='settings'?{}:{});
-      if(SESSION) refreshCurrentPage();
+      if(SESSION)refreshCurrentPage();
     });
   });
 }
 
-// ═══ FIX: refreshCurrentPage بدون regex ═══
 function refreshCurrentPage(){
-  if(CP==='home') renderHome();
-  else if(CP==='members') renderMembers();
-  else if(CP==='jumaa') renderJumaa();
-  else if(CP==='visits') renderVisits();
-  else if(CP==='finance') renderFinance();
-  else if(CP==='settings') renderSettings();
-  else if(CP==='profile') renderProfile();
-  else if(CP==='detail') {
-    // استخدام المتغيرات المحددة بدلاً من regex
-    if(currentDetailId && currentDetailType) {
-      if(currentDetailType==='member') openMemberDetail(currentDetailId);
-      else if(currentDetailType==='jumaa') openJumaaDetail(currentDetailId);
-      else if(currentDetailType==='visit') openVisitDetail(currentDetailId);
-    }
+  // Save current scroll before re-render
+  scrollPos[CP] = window.scrollY;
+  isFirebaseUpdate = true;
+
+  if(CP==='home')renderHome();
+  else if(CP==='members'){
+    // Only re-render member list content, not the whole page
+    const q = document.getElementById('msearch')?.value||'';
+    if(q) filterMembers();
+    else renderMembers();
   }
+  else if(CP==='jumaa')renderJumaa();
+  else if(CP==='visits')renderVisits();
+  else if(CP==='finance')renderFinance();
+  else if(CP==='settings'){renderSettings();}
+  else if(CP==='profile')renderProfile();
+  // Detail page: only re-render if needed, preserve scroll
+  else if(CP==='detail'){
+    if(currentMemberId) silentUpdateDetail(currentMemberId);
+    else if(currentJumaaId) silentUpdateJumaaCount(currentJumaaId);
+    else if(currentVisitId) silentUpdateVisitCount(currentVisitId);
+  }
+
+  // Restore scroll position after render
+  setTimeout(()=>{
+    if(scrollPos[CP] !== undefined){
+      window.scrollTo(0, scrollPos[CP]);
+    }
+    isFirebaseUpdate = false;
+  }, 50);
+}
+
+// Silent update - only update counters without re-rendering full page
+function silentUpdateDetail(mid){
+  const {paid,months}=calcMonths(mid);
+  const att=calcAttendance(mid);
+  // Update stats without full re-render
+  const els = document.querySelectorAll('[data-stat]');
+  els.forEach(el=>{
+    const key=el.dataset.stat;
+    if(key==='months')el.textContent=months+' شهر مدفوع';
+    else if(key==='paid')el.textContent=fmt(paid);
+    else if(key==='jumaa')el.textContent=att.jumaaDays;
+    else if(key==='visits')el.textContent=att.visitDays;
+    else if(key==='total')el.textContent=att.total;
+  });
+}
+
+function silentUpdateJumaaCount(jid){
+  const j=S.jumaa[jid]; if(!j)return;
+  const cnt=j.attendees?Object.keys(j.attendees).length:0;
+  const el=document.getElementById('jCount');
+  if(el)el.textContent=cnt+' عضو من '+arr(S.members).filter(m=>m.active).length+' حضر';
+}
+
+function silentUpdateVisitCount(vid){
+  const v=S.visits[vid]; if(!v)return;
+  const cnt=v.attendees?Object.keys(v.attendees).length:0;
+  const el=document.getElementById('vCount');
+  if(el)el.textContent=cnt+' عضو';
 }
 
 // ═══════════════════════════════════════
@@ -1656,14 +1465,9 @@ window.onload=async function(){
         document.getElementById('loading').style.display='none';
         const saved=sessionStorage.getItem('z2_sess');
         if(saved){
-          try{
-            SESSION=JSON.parse(saved);
-            if(SESSION.role==='member') bootMemberApp();
-            else bootApp();
-          }catch(e){
-            sessionStorage.removeItem('z2_sess');
-            document.getElementById('loginPage').style.display='flex';
-          }
+          SESSION=JSON.parse(saved);
+          if(SESSION.role==='member')bootMemberApp();
+          else bootApp();
         }else{
           document.getElementById('loginPage').style.display='flex';
         }
